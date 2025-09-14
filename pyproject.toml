@@ -8,8 +8,10 @@ dependencies = [
     "grandalf>=0.8",
     "langchain>=0.3.27",
     "langchain-community>=0.3.29",
+    "langchain-nomic>=0.1.5",
     "langchain-text-splitters>=0.3.11",
     "nltk>=3.9.1",
+    "nomic[local]>=3.5.3",
     "tiktoken>=0.11.0",
     "unstructured[md]>=0.18.14",
 ]

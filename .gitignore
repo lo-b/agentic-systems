@@ -16,3 +16,6 @@ wheels/
 **/.ipynb_checkpoints
 
 **/.idea
+
+# tmp output
+tmp

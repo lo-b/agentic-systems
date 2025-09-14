@@ -1,3 +1,5 @@
+from pprint import pp
+
 from langchain_core.globals import set_debug
 
 from module_01.chaining import (
@@ -10,6 +12,7 @@ from module_01.chaining import (
 from module_01.document import file_runnable
 from module_01.runnables import add_one, adder, greeter, lambda_adder
 from module_01.tokens import print_tokens
+from module_02.document_retriever import index_book
 
 
 def main():
@@ -32,6 +35,16 @@ def main():
     print(parallel_double_surround.invoke({"a": 3, "b": 3}))
     print(print_tokens("Hello agentic world!"))
     print(file_runnable("./resources/some_file.md"))
+
+    print("==== module_02 ====")
+    retriever = index_book(
+        path="./resources/the-little-go-book-karl-seguin.pdf",
+        tmp_path="./tmp/retriever",
+        chunk_size_overlap=(250, 50),
+    )
+
+    answer = retriever.similarity_search("iterate array", k=1)
+    pp(answer[0].model_dump())
 
 
 if __name__ == "__main__":
