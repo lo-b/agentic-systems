@@ -7,14 +7,6 @@ from langchain_nomic import NomicEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
-# TODO: index 'The Little Go Book'.
-# Ask the retriever the question:
-#   1. "do a for loop"
-#   2. "iterate over array"
-# INFO: By default indexing will happen per page, meaning results will also show full pages. Is there a way to make
-# more meaningful tex pieces/chunks?
-# WARN: Indexing of the whole book might take a while (~1m on old hardware).
-# It might be useful to save the store itself to disk (takes up <10MB; ~40 times larger than original book).
 def index_book(
     path: str, tmp_path: str, chunk_size_overlap: tuple[int, int] | None = None
 ) -> InMemoryVectorStore:
