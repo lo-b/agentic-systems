@@ -19,3 +19,6 @@ wheels/
 
 # tmp output
 tmp
+
+# LangGraph output directory containing pckl files
+.langgraph_api
