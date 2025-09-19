@@ -6,7 +6,7 @@ Returns a predefined response. Replace logic and configuration as needed.
 import asyncio
 from typing import Any, Dict, TypedDict
 
-from langchain_anthropic import ChatAnthropic
+from langchain_ollama import ChatOllama
 from langgraph.graph import StateGraph
 from langgraph.runtime import Runtime
 from langsmith import Client
@@ -43,7 +43,7 @@ async def summarize(state: InputState, runtime: Runtime[Context]) -> Dict[str, A
     client = Client()
     prompt = await asyncio.to_thread(client.pull_prompt, "summarize-vacancy-prompt")
 
-    model = ChatAnthropic(model_name="claude-3-5-sonnet-latest")
+    model = ChatOllama(model="qwen3:0.6b", reasoning=True)
     chain = prompt | model
 
     try:
