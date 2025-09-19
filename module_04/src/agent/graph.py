@@ -3,11 +3,14 @@
 Returns a predefined response. Replace logic and configuration as needed.
 """
 
+import asyncio
 from dataclasses import dataclass
 from typing import Any, Dict, TypedDict
 
+from langchain_anthropic import ChatAnthropic
 from langgraph.graph import StateGraph
 from langgraph.runtime import Runtime
+from langsmith import Client
 
 
 class Context(TypedDict):
@@ -28,24 +31,34 @@ class State:
     See: https://langchain-ai.github.io/langgraph/concepts/low_level/#state
     """
 
-    changeme: str = "example"
+    vacancy: str
+    summary: str = ""
+    draft: str = ""
 
 
-async def call_model(state: State, runtime: Runtime[Context]) -> Dict[str, Any]:
+async def summarize(state: State, runtime: Runtime[Context]) -> Dict[str, Any]:
     """Process input and returns output.
 
     Can use runtime context to alter behavior.
     """
-    return {
-        "changeme": "output from call_model. "
-        f"Configured with {runtime.context.get('my_configurable_param')}"
-    }
+    client = Client()
+    prompt = await asyncio.to_thread(client.pull_prompt, "summarize-vacancy-prompt")
+
+    model = ChatAnthropic(model_name="claude-3-5-sonnet-latest")
+    chain = prompt | model
+
+    try:
+        summary = await chain.ainvoke({"vacancy_description": state.vacancy})
+    except Exception as e:
+        print(f"Error during summarization: {e}")
+        summary = "Failed to generate summary"
+
+    return {"summary": summary}
 
 
-# Define the graph
 graph = (
     StateGraph(State, context_schema=Context)
-    .add_node(call_model)
-    .add_edge("__start__", "call_model")
+    .add_node(summarize)
+    .add_edge("__start__", "summarize")
     .compile(name="New Graph")
 )
