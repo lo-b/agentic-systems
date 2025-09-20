@@ -93,7 +93,7 @@ async def create_outline(state: OverallState) -> Dict[str, Any]:
     return {"response": draft}
 
 
-graph = (
+prompt_chain = (
     StateGraph(
         OverallState,
         input_schema=InputState,
@@ -106,5 +106,5 @@ graph = (
     .add_edge("__start__", "summarize")
     .add_edge("summarize", "create_draft")
     .add_edge("create_draft", "create_outline")
-    .compile(name="New Graph")
+    .compile(name="Prompt chaining workflow")
 )

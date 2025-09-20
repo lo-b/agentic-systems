@@ -2,7 +2,8 @@
   "$schema": "https://langgra.ph/schema.json",
   "dependencies": ["."],
   "graphs": {
-    "agent": "./module_04/src/agent/graph.py:graph"
+    "prompt_chaining": "./module_04/src/workflows/prompt_chaining.py:prompt_chain",
+    "basic_chatbot": "./module_04/src/workflows/basic_chatbot.py:basic_chatbot"
   },
   "env": ".env",
   "image_distro": "wolfi"
