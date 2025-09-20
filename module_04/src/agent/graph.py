@@ -13,7 +13,7 @@ from langgraph.graph import StateGraph
 from langgraph.runtime import Runtime
 from langsmith import Client
 
-# WARN: Unsure if this is problematic w.r.t. pregel/LangGraph's async requirement/preference.
+_model = ChatOllama(model="qwen3:0.6b", reasoning=True)
 _client = Client()
 
 
@@ -55,8 +55,7 @@ async def summarize(state: InputState, runtime: Runtime[Context]) -> Dict[str, A
     #     endpoint=os.environ["AZURE_INFERENCE_ENDPOINT"],
     #     credential=os.environ["AZURE_INFERENCE_CREDENTIAL"],
     # )
-    model = ChatOllama(model="qwen3:0.6b", reasoning=True)
-    chain = prompt | model
+    chain = prompt | _model
 
     try:
         summary = await chain.ainvoke({"vacancy_description": state["vacancy"]})
@@ -69,8 +68,7 @@ async def summarize(state: InputState, runtime: Runtime[Context]) -> Dict[str, A
 
 async def create_draft(state: OverallState) -> Dict[str, Any]:
     prompt = await asyncio.to_thread(_client.pull_prompt, "create-cv-draft")
-    model = ChatOllama(model="qwen3:0.6b", reasoning=True)
-    chain = prompt | model
+    chain = prompt | _model
 
     try:
         draft = await chain.ainvoke({"job_summary": state["summary"]})
