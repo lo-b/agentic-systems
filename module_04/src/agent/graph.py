@@ -13,6 +13,9 @@ from langgraph.graph import StateGraph
 from langgraph.runtime import Runtime
 from langsmith import Client
 
+# WARN: Unsure if this is problematic w.r.t. pregel/LangGraph's async requirement/preference.
+_client = Client()
+
 
 class Context(TypedDict):
     """Context parameters for the agent.
@@ -33,8 +36,10 @@ class OutputState(TypedDict):
     response: str
 
 
-class OverallState(InputState, OutputState):
-    pass
+class OverallState(TypedDict):
+    vacancy: str
+    summary: str
+    response: str
 
 
 async def summarize(state: InputState, runtime: Runtime[Context]) -> Dict[str, Any]:
@@ -42,8 +47,7 @@ async def summarize(state: InputState, runtime: Runtime[Context]) -> Dict[str, A
 
     Can use runtime context to alter behavior.
     """
-    client = Client()
-    prompt = await asyncio.to_thread(client.pull_prompt, "summarize-vacancy-prompt")
+    prompt = await asyncio.to_thread(_client.pull_prompt, "summarize-vacancy-prompt")
 
     # INFO: SaaS LLMs using Azure AI Foundry
     # model = AzureAIChatCompletionsModel(
@@ -60,7 +64,21 @@ async def summarize(state: InputState, runtime: Runtime[Context]) -> Dict[str, A
         print(f"Error during summarization: {e}")
         summary = "Failed to generate summary"
 
-    return {"vacancy": state["vacancy"], "response": summary}
+    return {"vacancy": state["vacancy"], "summary": summary}
+
+
+async def create_draft(state: OverallState) -> Dict[str, Any]:
+    prompt = await asyncio.to_thread(_client.pull_prompt, "create-cv-draft")
+    model = ChatOllama(model="qwen3:0.6b", reasoning=True)
+    chain = prompt | model
+
+    try:
+        draft = await chain.ainvoke({"job_summary": state["summary"]})
+    except Exception as e:
+        print(f"Error during summarization: {e}")
+        draft = "Failed to generate summary"
+
+    return {"response": draft}
 
 
 graph = (
@@ -71,6 +89,8 @@ graph = (
         context_schema=Context,
     )
     .add_node(summarize)
+    .add_node(create_draft)
     .add_edge("__start__", "summarize")
+    .add_edge("summarize", "create_draft")
     .compile(name="New Graph")
 )
