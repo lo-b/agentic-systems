@@ -3,9 +3,11 @@
 Returns a predefined response. Replace logic and configuration as needed.
 """
 
+# import os
 import asyncio
 from typing import Any, Dict, TypedDict
 
+# from langchain_azure_ai.chat_models import AzureAIChatCompletionsModel
 from langchain_ollama import ChatOllama
 from langgraph.graph import StateGraph
 from langgraph.runtime import Runtime
@@ -43,6 +45,12 @@ async def summarize(state: InputState, runtime: Runtime[Context]) -> Dict[str, A
     client = Client()
     prompt = await asyncio.to_thread(client.pull_prompt, "summarize-vacancy-prompt")
 
+    # INFO: SaaS LLMs using Azure AI Foundry
+    # model = AzureAIChatCompletionsModel(
+    #     model="Ministral-3B",
+    #     endpoint=os.environ["AZURE_INFERENCE_ENDPOINT"],
+    #     credential=os.environ["AZURE_INFERENCE_CREDENTIAL"],
+    # )
     model = ChatOllama(model="qwen3:0.6b", reasoning=True)
     chain = prompt | model
 
