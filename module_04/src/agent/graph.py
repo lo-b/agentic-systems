@@ -3,17 +3,24 @@
 Returns a predefined response. Replace logic and configuration as needed.
 """
 
-# import os
 import asyncio
+import os
 from typing import Any, Dict, TypedDict
 
-# from langchain_azure_ai.chat_models import AzureAIChatCompletionsModel
-from langchain_ollama import ChatOllama
+from langchain_azure_ai.chat_models import AzureAIChatCompletionsModel
+
+# from langchain_ollama import ChatOllama
 from langgraph.graph import StateGraph
 from langgraph.runtime import Runtime
 from langsmith import Client
 
-_model = ChatOllama(model="qwen3:0.6b", reasoning=True)
+# INFO: SaaS LLMs using Azure AI Foundry
+_model = AzureAIChatCompletionsModel(
+    model="Ministral-3B",
+    endpoint=os.environ["AZURE_INFERENCE_ENDPOINT"],
+    credential=os.environ["AZURE_INFERENCE_CREDENTIAL"],
+)
+# _model = ChatOllama(model="qwen3:0.6b", reasoning=True)
 _client = Client()
 
 
@@ -39,6 +46,7 @@ class OutputState(TypedDict):
 class OverallState(TypedDict):
     vacancy: str
     summary: str
+    draft: str
     response: str
 
 
@@ -48,13 +56,6 @@ async def summarize(state: InputState, runtime: Runtime[Context]) -> Dict[str, A
     Can use runtime context to alter behavior.
     """
     prompt = await asyncio.to_thread(_client.pull_prompt, "summarize-vacancy-prompt")
-
-    # INFO: SaaS LLMs using Azure AI Foundry
-    # model = AzureAIChatCompletionsModel(
-    #     model="Ministral-3B",
-    #     endpoint=os.environ["AZURE_INFERENCE_ENDPOINT"],
-    #     credential=os.environ["AZURE_INFERENCE_CREDENTIAL"],
-    # )
     chain = prompt | _model
 
     try:
@@ -76,6 +77,19 @@ async def create_draft(state: OverallState) -> Dict[str, Any]:
         print(f"Error during summarization: {e}")
         draft = "Failed to generate summary"
 
+    return {"draft": draft}
+
+
+async def create_outline(state: OverallState) -> Dict[str, Any]:
+    prompt = await asyncio.to_thread(_client.pull_prompt, "create-cv-outline")
+    chain = prompt | _model
+
+    try:
+        draft = await chain.ainvoke({"cv_draft": state["draft"]})
+    except Exception as e:
+        print(f"Error during summarization: {e}")
+        draft = "Failed to generate summary"
+
     return {"response": draft}
 
 
@@ -88,7 +102,9 @@ graph = (
     )
     .add_node(summarize)
     .add_node(create_draft)
+    .add_node(create_outline)
     .add_edge("__start__", "summarize")
     .add_edge("summarize", "create_draft")
+    .add_edge("create_draft", "create_outline")
     .compile(name="New Graph")
 )
