@@ -1,22 +1,21 @@
 import asyncio
-import os
 
-from langchain_azure_ai.chat_models import AzureAIChatCompletionsModel
+# import os
+# from langchain_azure_ai.chat_models import AzureAIChatCompletionsModel
 from langchain_core.messages import HumanMessage, SystemMessage
-
-# from langchain_ollama import ChatOllama
+from langchain_ollama import ChatOllama
 from langgraph.graph import END, START, StateGraph
 from langsmith.client import Client
 from typing_extensions import Annotated, Any, Literal, TypedDict, cast
 
 _langsmith_client = Client()
 
-# _llm = ChatOllama(model="qwen3:0.6b", reasoning=True)
-_llm = AzureAIChatCompletionsModel(
-    model="Ministral-3B",
-    endpoint=os.environ["AZURE_INFERENCE_ENDPOINT"],
-    credential=os.environ["AZURE_INFERENCE_CREDENTIAL"],
-)
+_llm = ChatOllama(model="qwen3:0.6b", reasoning=True)
+# _llm = AzureAIChatCompletionsModel(
+#     model="Ministral-3B",
+#     endpoint=os.environ["AZURE_INFERENCE_ENDPOINT"],
+#     credential=os.environ["AZURE_INFERENCE_CREDENTIAL"],
+# )
 
 
 class Route(TypedDict):
