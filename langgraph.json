@@ -4,7 +4,8 @@
   "graphs": {
     "basic_chatbot": "./module_04/src/workflows/basic_chatbot.py:basic_chatbot",
     "prompt_chaining": "./module_04/src/workflows/prompt_chaining.py:prompt_chain",
-    "simple_routing": "./module_04/src/workflows/simple_routing.py:simple_routing"
+    "simple_routing": "./module_04/src/workflows/simple_routing.py:simple_routing",
+    "chained_routing": "./module_04/src/workflows/chained_routing.py:chained_routing"
   },
   "env": ".env",
   "image_distro": "wolfi"
