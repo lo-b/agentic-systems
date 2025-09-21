@@ -34,23 +34,23 @@ class State(TypedDict):
 
 
 def low_code(state: State):
-    p = _langsmith_client.pull_prompt("low_code_cv_outline")
-    c = p | _llm
-    result = c.invoke({"job_description": state["input"]})
+    prompt = _langsmith_client.pull_prompt("low_code_cv_outline")
+    chain = prompt | _llm
+    result = chain.invoke({"job_description": state["input"]})
     return {"output": result.content}
 
 
 def data_engineering(state: State):
-    p = _langsmith_client.pull_prompt("data_engineering_cv_outline")
-    c = p | _llm
-    result = c.invoke({"job_description": state["input"]})
+    prompt = _langsmith_client.pull_prompt("data_engineering_cv_outline")
+    chain = prompt | _llm
+    result = chain.invoke({"job_description": state["input"]})
     return {"output": result.content}
 
 
 def integration_development(state: State):
-    p = _langsmith_client.pull_prompt("integration_development_cv_outline")
-    c = p | _llm
-    result = c.invoke({"job_description": state["input"]})
+    prompt = _langsmith_client.pull_prompt("integration_developer_cv_outline")
+    chain = prompt | _llm
+    result = chain.invoke({"job_description": state["input"]})
     return {"output": result.content}
 
 
