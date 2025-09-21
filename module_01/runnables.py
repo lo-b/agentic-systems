@@ -1,13 +1,10 @@
 from langchain_core.runnables import RunnableLambda
 
 
-# TODO: create a function based runnable that adds one to the input and returns it
 def _add_one(a: int) -> int:
     return a + 1
 
 
-# TODO: create a function based runnable that 'takes two arguments' and returns their sum
-# INFO: below cannot be passed directly; inputs to runnable functions need to be a SINGLE argument.
 def _adder(a: int, b: int) -> int:
     return a + b
 
@@ -16,7 +13,6 @@ def _adder_wrapper(_input: dict[str, int]) -> int:
     return _adder(_input["a"], _input["b"])
 
 
-# TODO: create a class based runnable that returns "Hello World!"
 class Greeter:
     greeting: str
 
