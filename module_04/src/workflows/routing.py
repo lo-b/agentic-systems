@@ -6,14 +6,13 @@ from typing_extensions import Annotated, Literal, TypedDict, cast
 _llm = ChatOllama(model="qwen3:0.6b", reasoning=True)
 
 
-# Schema for structured output to use as routing logic
 class Route(TypedDict):
     step: Annotated[
-        Literal["poem", "story", "joke"], "The next step in the routing process"
+        Literal["low_code", "data_engineering", "integration_development"],
+        "The next step in the routing process",
     ]
 
 
-# Augment the LLM with schema for structured output
 _router = _llm.with_structured_output(Route)
 
 
@@ -23,36 +22,31 @@ class State(TypedDict):
     output: str
 
 
-# Nodes
-def llm_call_1(state: State):
-    """Write a story"""
-
+def low_code(state: State):
     result = _llm.invoke(state["input"])
     return {"output": result.content}
 
 
-def llm_call_2(state: State):
-    """Write a joke"""
-
+def data_engineering(state: State):
     result = _llm.invoke(state["input"])
     return {"output": result.content}
 
 
-def llm_call_3(state: State):
-    """Write a poem"""
-
+def integration_development(state: State):
     result = _llm.invoke(state["input"])
     return {"output": result.content}
 
 
-def llm_call_router(state: State):
+def router(state: State):
     """Route the input to the appropriate node"""
 
-    # Run the augmented LLM with structured output to serve as routing logic
     decision = _router.invoke(
         [
             SystemMessage(
-                content="Route the input to story, joke, or poem based on the user's request."
+                content=(
+                    "Route the input to 'low_code', 'data_engineering'"
+                    " or 'integration_development' based on the user's request."
+                )
             ),
             HumanMessage(content=state["input"]),
         ]
@@ -63,36 +57,34 @@ def llm_call_router(state: State):
     return {"decision": decision["step"]}
 
 
-# Conditional edge function to route to the appropriate node
 def route_decision(state: State):
-    # Return the node name you want to visit next
-    if state["decision"] == "story":
-        return "llm_call_1"
-    elif state["decision"] == "joke":
-        return "llm_call_2"
-    elif state["decision"] == "poem":
-        return "llm_call_3"
+    """Routes to the decision its corresponding node."""
+    if state["decision"] == "low_code":
+        return "low_code"
+    elif state["decision"] == "data_engineering":
+        return "data_engineering"
+    elif state["decision"] == "integration_development":
+        return "integration_development"
 
 
-# Build workflow
 router_workflow = (
     StateGraph(State)
-    .add_node("llm_call_1", llm_call_1)
-    .add_node("llm_call_2", llm_call_2)
-    .add_node("llm_call_3", llm_call_3)
-    .add_node("llm_call_router", llm_call_router)
-    .add_edge(START, "llm_call_router")
+    .add_node("low_code", low_code)
+    .add_node("data_engineering", data_engineering)
+    .add_node("integration_development", integration_development)
+    .add_node("router", router)
+    .add_edge(START, "router")
     .add_conditional_edges(
-        "llm_call_router",
+        "router",
         route_decision,
-        {  # Name returned by route_decision : Name of next node to visit
-            "llm_call_1": "llm_call_1",
-            "llm_call_2": "llm_call_2",
-            "llm_call_3": "llm_call_3",
+        {
+            "low_code": "low_code",
+            "data_engineering": "data_engineering",
+            "integration_development": "integration_development",
         },
     )
-    .add_edge("llm_call_1", END)
-    .add_edge("llm_call_2", END)
-    .add_edge("llm_call_3", END)
+    .add_edge("low_code", END)
+    .add_edge("data_engineering", END)
+    .add_edge("integration_development", END)
     .compile()
 )
