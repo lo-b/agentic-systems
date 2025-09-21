@@ -1,9 +1,11 @@
+# FIX: Running main.py file in root dir might raise 'ModuleNotFoundError'.
+# Can be 'fixed' by prefixing module with a '.', e.g. '.basic_chatbot'
 from basic_chatbot import basic_chatbot
 from prompt_chaining import prompt_chain
-from routing import router_workflow
+from simple_routing import simple_routing
 
 __all__ = [
     "basic_chatbot",
     "prompt_chain",
-    "router_workflow",
+    "simple_routing",
 ]
