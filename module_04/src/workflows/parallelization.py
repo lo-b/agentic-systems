@@ -75,7 +75,17 @@ def aggregator(state: OverallState):
 
     combined = f"JOB SUMMARY:\n{state['job_summary']}\n\n"
     combined += f"CV SUMMARY:\n{state['cv_summary']}\n\n"
-    return {"response": combined}
+
+    prompt = _client.pull_prompt("cv-outline-from-aggregation")
+    chain = prompt | _model
+    return {
+        "response": chain.invoke(
+            {
+                "job_summary": state["job_summary"],
+                "cv_summary": state["cv_summary"],
+            }
+        )
+    }
 
 
 parallelization = (
