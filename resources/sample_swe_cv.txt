@@ -1,0 +1,47 @@
+## CV: Sarah Martinez
+
+**Email:** sarah.martinez@email.com  
+**Phone:** (555) 123-4567  
+**Location:** Austin, TX  
+**LinkedIn:** linkedin.com/in/sarahmartinez
+
+### Professional Summary
+Experienced software engineer with 6 years of experience developing web applications and backend systems. Strong background in full-stack development with a focus on scalable solutions and clean code practices.
+
+### Technical Skills
+- **Programming Languages:** Python, JavaScript, TypeScript, Go
+- **Web Frameworks:** Django, Flask, React, Node.js
+- **Databases:** PostgreSQL, MySQL, Redis
+- **Version Control:** Git, GitHub
+- **Testing:** Unit testing, Integration testing, pytest, Jest
+- **Operating Systems:** Linux, macOS
+- **Other:** RESTful APIs, GraphQL, Agile methodologies
+
+### Professional Experience
+
+**Software Engineer** | DataStream Analytics | 2021 - Present
+- Developed and maintained Python-based data processing applications serving 100K+ users
+- Built RESTful APIs using Django and Flask frameworks
+- Collaborated with cross-functional teams using Agile methodologies
+- Implemented comprehensive unit and integration testing suites
+- Optimized database queries resulting in 40% performance improvement
+
+**Full Stack Developer** | WebSolutions Inc | 2019 - 2021
+- Created responsive web applications using React and Node.js
+- Designed and implemented PostgreSQL database schemas
+- Participated in code reviews and maintained coding standards
+- Worked closely with product managers and designers
+
+**Junior Software Developer** | StartupTech | 2018 - 2019
+- Developed features for customer-facing web applications
+- Fixed bugs and performed maintenance on existing codebases
+- Learned industry best practices for software development
+
+### Education
+**Bachelor of Science in Computer Science**  
+University of Texas at Austin | 2018
+
+### Projects
+- **Personal Finance Tracker** - Full-stack web app built with Python/Django and React
+- **API Rate Limiter** - Open-source Python library with 200+ GitHub stars
+- **Task Management System** - Team collaboration tool using GraphQL and PostgreSQL

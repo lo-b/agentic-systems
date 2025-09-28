@@ -11,24 +11,25 @@ from typing_extensions import Annotated, TypedDict
 llm = AzureAIChatCompletionsModel(model="Ministral-3B")
 
 
-class Section(TypedDict):
-    name: Annotated[str, "Name for this section of the report."]
+class Improvement(TypedDict):
+    name: Annotated[str, "Name for this section of improvement."]
     description: Annotated[
         str,
-        "Brief overview of the main topics and concepts to be covered in this section.",
+        "Brief overview of the what should be improved.",
     ]
 
 
-class Sections(TypedDict):
-    sections: Annotated[list[Section], "Sections of the report."]
+class Improvements(TypedDict):
+    sections: Annotated[list[Improvement], "CV improvements."]
 
 
-planner = llm.with_structured_output(Sections)
+planner = llm.with_structured_output(Improvements)
 
 
 class State(TypedDict):
-    topic: str  # Report topic
-    sections: list[Section]  # List of report sections
+    cv: str
+    job_description: str
+    sections: list[Improvement]  # List of report sections
     completed_sections: Annotated[
         list, operator.add
     ]  # All workers write to this key in parallel
@@ -36,18 +37,46 @@ class State(TypedDict):
 
 
 class WorkerState(TypedDict):
-    section: Section
+    section: Improvement
     completed_sections: Annotated[list, operator.add]
 
 
 def orchestrator(state: State):
-    """Orchestrator that generates a plan for the report"""
+    """Orchestrator that generates CV improvements, based on a job description/vacancy."""
 
     # Generate queries
     report_sections = planner.invoke(
         [
-            SystemMessage(content="Generate a plan for the report."),
-            HumanMessage(content=f"Here is the report topic: {state['topic']}"),
+            SystemMessage(
+                content="""You are an expert CV consultant and ATS optimization specialist. Analyze the provided CV 
+                against the job description to identify specific, actionable improvements.
+
+                Your task is to generate a comprehensive list of targeted improvements that will:
+                1. Better align the CV with the job requirements
+                2. Optimize for ATS (Applicant Tracking System) compatibility
+                3. Highlight relevant skills and experiences
+                4. Improve keyword matching and relevance
+                5. Enhance overall presentation and impact
+
+                Focus on these improvement categories:
+                - **Skills Alignment**: Missing technical/soft skills mentioned in the job description
+                - **Experience Relevance**: How to better showcase relevant experience and achievements
+                - **Keyword Optimization**: Important keywords and phrases that should be incorporated
+                - **Formatting & Structure**: ATS-friendly formatting and logical flow improvements
+                - **Quantifiable Achievements**: Areas where metrics and results should be added
+                - **Industry Language**: Professional terminology and language that matches the role
+                - **Section Enhancement**: Improvements to specific CV sections (summary, experience, education, etc.)
+
+                For each improvement, provide:
+                - A clear, descriptive name that indicates the specific area of focus
+                - A detailed description that explains what needs to be changed and why it matters for this specific role
+
+                Prioritize improvements that will have the highest impact on job application success."""
+            ),
+            HumanMessage(content=f"**CV to Analyze:**\n{state['cv']}"),
+            HumanMessage(
+                content=f"**Target Job Description:**\n{state['job_description']}\n\nPlease analyze the CV against this job description and generate specific improvement recommendations."
+            ),
         ]
     )
 
@@ -55,16 +84,57 @@ def orchestrator(state: State):
 
 
 def llm_call(state: WorkerState):
-    """Worker writes a section of the report"""
+    """Worker writes an improvement to tailor CV to the job description."""
+
+    # Get the full state context (you'll need to modify the workflow to pass this)
+    # For now, we'll work with the section information provided
 
     # Generate section
     section = llm.invoke(
         [
             SystemMessage(
-                content="Write a report section following the provided name and description. Include no preamble for each section. Use markdown formatting."
+                content="""You are a professional CV writing expert. Your task is to provide specific, actionable 
+                improvement advice for tailoring a CV to a target job.
+
+                For the given improvement area, provide:
+
+                **Structure your response as follows:**
+                ## {Improvement Name}
+
+                ### Why This Matters
+                Briefly explain why this improvement is important for job application success and ATS optimization.
+
+                ### Current Gap Analysis
+                Identify what's currently missing or could be enhanced.
+
+                ### Specific Recommendations
+                Provide concrete, actionable steps including:
+                - Exact text suggestions where applicable
+                - Keyword recommendations
+                - Formatting improvements
+                - Positioning advice
+
+                ### Implementation Examples
+                Where relevant, provide before/after examples or sample text that demonstrates the improvement.
+                ### Impact Assessment
+                Explain how this change will improve the CV's effectiveness for the target role.
+
+                **Guidelines:**
+                - Be specific and actionable rather than generic
+                - Focus on ATS optimization and keyword relevance
+                - Provide concrete examples and suggested text when possible
+                - Consider both human recruiters and automated systems
+                - Ensure recommendations are realistic and achievable
+                - Use professional, clear language
+                - Format using markdown for readability"""
             ),
             HumanMessage(
-                content=f"Here is the section name: {state['section']['name']} and description: {state['section']['description']}"
+                content=f"""Please provide detailed improvement advice for:
+                **Improvement Focus:** {state["section"]["name"]}
+
+                **Improvement Description:** {state["section"]["description"]}
+
+                Provide comprehensive, actionable guidance following the structure outlined in the system message."""
             ),
         ]
     )
