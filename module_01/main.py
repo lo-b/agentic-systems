@@ -1,15 +1,14 @@
-from langchain_core.globals import set_debug
-
-from module_01.chaining import (
+from chaining import (
     adder_chain,
     parallel_chain,
     parallel_double_surround,
     s,
     surround_thrice,
 )
-from module_01.document import file_runnable
-from module_01.runnables import add_one, adder, greeter, lambda_adder
-from module_01.tokens import print_tokens
+from document import file_runnable
+from langchain_core.globals import set_debug
+from runnables import add_one, adder, greeter, lambda_adder
+from tokens import print_tokens
 
 
 def main():
@@ -31,7 +30,7 @@ def main():
     print(surround_thrice.invoke(3))
     print(parallel_double_surround.invoke({"a": 3, "b": 3}))
     print(print_tokens("Hello agentic world!"))
-    print(file_runnable("./resources/some_file.md"))
+    print(file_runnable("../resources/some_file.md"))
 
 
 if __name__ == "__main__":
