@@ -1,0 +1,14 @@
+{
+  "$schema": "https://langgra.ph/schema.json",
+  "dependencies": ["."],
+  "graphs": {
+    "basic_chatbot": "./module_04/src/workflows/basic_chatbot.py:basic_chatbot",
+    "prompt_chaining": "./module_04/src/workflows/prompt_chaining.py:prompt_chain",
+    "simple_routing": "./module_04/src/workflows/simple_routing.py:simple_routing",
+    "chained_routing": "./module_04/src/workflows/chained_routing.py:chained_routing",
+    "parallelization": "./module_04/src/workflows/parallelization.py:parallelization",
+    "orchestrator_workers": "./module_04/src/workflows/orchestrator_workers.py:orchestrator_workers"
+  },
+  "env": ".env",
+  "image_distro": "wolfi"
+}

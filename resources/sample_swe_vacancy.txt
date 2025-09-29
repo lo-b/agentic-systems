@@ -1,0 +1,26 @@
+## Job Description: Senior Software Engineer - Cloud Platform Team
+
+**Company:** TechFlow Solutions  
+**Location:** San Francisco, CA (Remote OK)  
+**Experience Level:** 5-8 years
+
+### Job Summary
+We are seeking a Senior Software Engineer to join our Cloud Platform team. You will be responsible for designing,
+developing, and maintaining scalable cloud-based applications and infrastructure.
+
+### Key Requirements
+1. **Python/Java Development** - 5+ years of experience in Python or Java
+2. **Cloud Platforms** - Extensive experience with AWS, Azure, or GCP
+3. **Kubernetes/Docker** - Production experience with container orchestration
+4. **Infrastructure as Code** - Proficiency with Terraform, CloudFormation, or similar
+5. **Microservices Architecture** - Experience designing and implementing microservices
+6. **Database Management** - SQL and NoSQL database experience (PostgreSQL, MongoDB)
+7. **CI/CD Pipelines** - Experience with Jenkins, GitLab CI, or GitHub Actions
+8. **Monitoring & Observability** - Experience with Prometheus, Grafana, ELK stack
+9. **Agile/Scrum Methodology** - Experience working in Agile teams
+10. **Security Best Practices** - Knowledge of application and cloud security
+
+### Nice to Have
+- Experience with GraphQL APIs
+- Knowledge of machine learning workflows
+- Open source contributions
