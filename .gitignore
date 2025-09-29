@@ -16,3 +16,9 @@ wheels/
 **/.ipynb_checkpoints
 
 **/.idea
+
+# tmp output
+tmp
+
+# LangGraph output directory containing pckl files
+.langgraph_api
