@@ -1,15 +1,14 @@
-from langchain_core.globals import set_debug
-
-from module_01.chaining import (
+from chaining import (
     adder_chain,
     parallel_chain,
     parallel_double_surround,
     s,
     surround_thrice,
 )
-from module_01.document import file_runnable
-from module_01.runnables import add_one, adder, greeter, lambda_adder
-from module_01.tokens import print_tokens
+from document import file_runnable
+from langchain_core.globals import set_debug
+from runnables import add_one, adder, greeter, lambda_adder
+from tokens import print_tokens
 
 
 def main():
