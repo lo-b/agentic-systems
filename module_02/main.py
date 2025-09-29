@@ -1,7 +1,7 @@
 from pprint import pp
 
-from module_02.cloud_retriever import load_pdf_as_docs, vector_store_index
-from module_02.document_retriever import index_book
+from cloud_retriever import load_pdf_as_docs, vector_store_index
+from document_retriever import index_book
 
 
 def main():
