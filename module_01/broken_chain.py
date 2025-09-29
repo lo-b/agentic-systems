@@ -27,11 +27,9 @@ format_result: RunnableLambda[int, str] = RunnableLambda(_format_result)
 
 buggy_chain = RunnableSequence(add_ten, process, double, format_result)
 
-# TODO: fix the chain containing a bug below
+# called directly...
 print(buggy_chain(input=2))
 
-# TODO: what is the output of '_process_number' for the input 722
-# FIX: remove answer
 set_debug(True)
 print(buggy_chain.invoke(722))  # 91
 print(buggy_chain.get_graph().draw_ascii())

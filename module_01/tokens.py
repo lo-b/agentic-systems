@@ -1,7 +1,5 @@
 import tiktoken
 
-# TODO: use the tiktoken encoder to the string 'Hello agentic world!'
-# Q: Taking the 'gpt-4' model, how many tokens does the string consist of?
 s = "Hello agentic world!"
 
 

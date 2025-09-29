@@ -26,7 +26,6 @@ class Greeter:
         return self.greeting + " " + invoke_input
 
 
-# TODO: create a lambda based runnable
 lambda_adder: RunnableLambda[dict[str, int], int] = RunnableLambda(
     lambda d: d["a"] + d["b"]
 )
