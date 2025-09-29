@@ -4,25 +4,7 @@ from langchain_community.document_loaders import UnstructuredMarkdownLoader
 from langchain_core.documents import Document
 from langchain_core.runnables import RunnableLambda
 
-# INFO: data + metadata can be stored using the `Document` class
-d = Document(
-    id=str(uuid4()),  # an identifier for a document
-    page_content="Hello agentic world!",  # string text of the document
-    metadata={
-        "title": "greeting",
-        "label": "foo",
-        "tag": "bar",
-    },  # dictionary of metadata
-)
 
-
-# TODO: Load the 'some_file.md' markdown file. Create a runnable that adds
-# inputs from the A and B title headers and returns the result
-# INFO:
-#   1. Use the unstructured markdown loader; grab title categories with depth 1;
-#   2. Remember that a runnable can only have a single (e.g. a dict) input
-#   3. Metadata of a document will be a dict with varying keys,
-#      accessing a non-existent key will raise (thrown) a 'KeyError'.
 def _f(a, b) -> int:
     return int(a) * int(b)
 
