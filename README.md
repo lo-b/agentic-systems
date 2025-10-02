@@ -17,7 +17,50 @@ Agentic systems exploration using LangChain and LangGraph.
 <!-- TODO: extend/replace venv info with IDE setup-->
 <!-- TODO: install python necessary? -->
 
-## Using virtual environment (venv)
+## Environment setup
+
+Create free accounts (no credit card required) for the following services:
+
+- **_LangSmith_**: monitoring & tracing for agents and LLM workflows
+  1. [Sign up](https://smith.langchain.com/) with _Google, GitHub, Discord or email_
+  2. Go to **_Settings_** > **_API Keys_**, create a new API key and store it somewhere
+
+- **_Qdrant Cloud_**: vector database.
+  1. [Sign up](https://login.cloud.qdrant.io/) with _Google, GitHub or email_
+  2. Create a new cluster
+  3. Store the auto generated API key
+  4. Store the cluster its endpoint
+
+#### sample `.env` file
+
+```text
+LANGSMITH_PROJECT=agentic-systems
+LANGSMITH_TRACING=true
+LANGSMITH_API_KEY=...
+QDRANT_CLUSTER_ENDPOINT=...
+QDRANT_API_KEY=...
+AZURE_INFERENCE_ENDPOINT=https://agentic-systems-resource.services.ai.azure.com/models
+AZURE_INFERENCE_CREDENTIAL=...
+```
+
+#### variables overview
+
+| Variable                     | Description                                                      |
+| ---------------------------- | ---------------------------------------------------------------- |
+| `LANGSMITH_PROJECT`          | Project name for LangSmith tracing and monitoring                |
+| `LANGSMITH_TRACING`          | Enable/disable LangSmith tracing for debugging and observability |
+| `LANGSMITH_API_KEY`          | API key for authenticating with LangSmith services               |
+| `QDRANT_CLUSTER_ENDPOINT`    | URL endpoint for the Qdrant vector database cluster$\bold{^1}$   |
+| `QDRANT_API_KEY`             | API key for authenticating with the Qdrant cluster               |
+| `AZURE_INFERENCE_ENDPOINT`   | Azure AI inference service endpoint URL                          |
+| `AZURE_INFERENCE_CREDENTIAL` | Authentication credential for Azure AI$\bold{^2}$                |
+
+> $\bold{^1}$ example: `https://871c0680-f6d1-41d9-be88-83c7cd7dcdad.europe-west3-0.gcp.cloud.qdrant.io`<br>
+> $\bold{^2}$The `AZURE_INFERENCE_CREDENTIAL` is sent as a One-Time Password (OTP) via email;
+
+###
+
+## Using Python virtual environment (venv)
 
 Depending on your workflow you might have to manually activate the python venv.
 
