@@ -50,13 +50,13 @@ AZURE_INFERENCE_CREDENTIAL=...
 | `LANGSMITH_PROJECT`          | Project name for LangSmith tracing and monitoring                |
 | `LANGSMITH_TRACING`          | Enable/disable LangSmith tracing for debugging and observability |
 | `LANGSMITH_API_KEY`          | API key for authenticating with LangSmith services               |
-| `QDRANT_CLUSTER_ENDPOINT`    | URL endpoint for the Qdrant vector database cluster$\bold{^1}$   |
+| `QDRANT_CLUSTER_ENDPOINT`    | URL endpoint for the Qdrant vector database cluster $^1$         |
 | `QDRANT_API_KEY`             | API key for authenticating with the Qdrant cluster               |
 | `AZURE_INFERENCE_ENDPOINT`   | Azure AI inference service endpoint URL                          |
-| `AZURE_INFERENCE_CREDENTIAL` | Authentication credential for Azure AI$\bold{^2}$                |
+| `AZURE_INFERENCE_CREDENTIAL` | Authentication credential for Azure AI $^2$                      |
 
-> $\bold{^1}$ example: `https://871c0680-f6d1-41d9-be88-83c7cd7dcdad.europe-west3-0.gcp.cloud.qdrant.io`<br>
-> $\bold{^2}$The `AZURE_INFERENCE_CREDENTIAL` is sent as a One-Time Password (OTP) via email;
+> $^1$ example: `https://871c0680-f6d1-41d9-be88-83c7cd7dcdad.europe-west3-0.gcp.cloud.qdrant.io`<br>
+> $^2$ The `AZURE_INFERENCE_CREDENTIAL` is sent as a One-Time Password (OTP) via email;
 
 ###
 
