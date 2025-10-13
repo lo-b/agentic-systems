@@ -19,6 +19,15 @@ Agentic systems exploration using LangChain and LangGraph.
 
 ## Environment setup
 
+#### VSCode setup
+
+Follow the setup guide for [windows](https://code.visualstudio.com/docs/setup/windows) or
+[macOS](https://code.visualstudio.com/docs/setup/mac).
+
+Open the root folder of the git(hub) repository and install **_Workspace recommended extensions_**.
+
+#### Accounts & services
+
 Create free accounts (no credit card required) for the following services:
 
 - **_LangSmith_**: monitoring & tracing for agents and LLM workflows
