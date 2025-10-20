@@ -183,11 +183,18 @@ async def call_model(
     model = load_chat_model(runtime.context.model).bind_tools(tools)
 
     # Format the system prompt. Customize this to change the agent's behavior.
-    system_message = (
-        "You are a helpful AI assistant.\n\n"
-        f"Context:\n- pr_id: {runtime.context.pr_id}\n- repo_name: {runtime.context.repo_name}\n\n"
-        "When calling tools, ALWAYS use the pr_id from Context for any parameter named 'pr_id'.\n"
-        "Do not guess or default to other values (e.g., 1). If a tool requires pr_id and it's not in the user message, still include the Context pr_id.\n"
+    system_message = ("You are a reliable, concise AI assistant.") + (
+        f"\n\nContext (defaults):\n- pr_id: {runtime.context.pr_id}\n- repo_name: {runtime.context.repo_name}\n\n"
+        "Tool-calling policy:\n"
+        "1) When invoking tools, if the tool schema contains parameters named 'pr_id' and/or 'repo_name', include them.\n"
+        "2) If the user explicitly provides values for 'pr_id' or 'repo_name' in their latest message (natural language or structured), PREFER the user's values over Context.\n"
+        "3) Otherwise, default to the Context values above. Do not guess or invent other values (e.g., 1).\n"
+        "4) Only pass parameters that exist in the tool's schema; do not add extra or unknown fields.\n"
+        "5) If required parameters are missing and neither the user nor Context provides them, ask a brief clarifying question instead of guessing.\n\n"
+        "Assistant style:\n"
+        "- Be brief and action-oriented.\n"
+        "- Think step-by-step when choosing tools, but share only the necessary reasoning.\n"
+        "- Confirm overrides when the user supplies different 'pr_id' or 'repo_name'.\n"
     )
     # Get the model's response
     response = cast(
