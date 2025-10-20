@@ -7,12 +7,15 @@ import asyncio
 import os
 from typing import Any, Dict, TypedDict
 
-from langchain_azure_ai.chat_models import AzureAIChatCompletionsModel
+from dotenv import load_dotenv
 from langchain import hub
+from langchain_azure_ai.chat_models import AzureAIChatCompletionsModel
 
 # from langchain_ollama import ChatOllama
 from langgraph.graph import StateGraph
 from langgraph.runtime import Runtime
+
+assert load_dotenv(), ".env file missing or empty"
 
 # INFO: SaaS LLMs using Azure AI Foundry
 _model = AzureAIChatCompletionsModel(
