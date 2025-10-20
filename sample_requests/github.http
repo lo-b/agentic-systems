@@ -1,0 +1,53 @@
+### Get repo info
+GET {{GITHUB_SERVICE_URL}}/repos/{{GITHUB_OWNER}}/SimpleFaas
+Authorization: Bearer {{GITHUB_PERSONAL_ACCESS_TOKEN}}
+X-GitHub-Api-Version: {{GITHUB_API_VERSION}}
+
+### Get repo pull requets info
+GET {{GITHUB_SERVICE_URL}}/repos/{{GITHUB_OWNER}}/SimpleFaas/pulls
+Accept: application/vnd.github+json
+Authorization: Bearer {{GITHUB_PERSONAL_ACCESS_TOKEN}}
+X-GitHub-Api-Version: {{GITHUB_API_VERSION}}
+
+### List pull request files
+GET {{GITHUB_SERVICE_URL}}/repos/{{GITHUB_OWNER}}/SimpleFaas/pulls/1/files
+Accept: application/vnd.github+json
+Authorization: Bearer {{GITHUB_PERSONAL_ACCESS_TOKEN}}
+X-GitHub-Api-Version: {{GITHUB_API_VERSION}}
+
+### List PR comments
+GET {{GITHUB_SERVICE_URL}}/repos/{{GITHUB_OWNER}}/SimpleFaas/issues/1/comments
+Accept: application/vnd.github+json
+Authorization: Bearer {{GITHUB_PERSONAL_ACCESS_TOKEN}}
+X-GitHub-Api-Version: {{GITHUB_API_VERSION}}
+
+
+### Update PR description
+PATCH {{GITHUB_SERVICE_URL}}/repos/{{GITHUB_OWNER}}/SimpleFaas/pulls/2
+Accept: application/vnd.github+json
+Authorization: Bearer {{GITHUB_PERSONAL_ACCESS_TOKEN}}
+X-GitHub-Api-Version: {{GITHUB_API_VERSION}}
+
+{"body":"updated body"}
+
+### List reviews for a PR
+GET {{GITHUB_SERVICE_URL}}/repos/{{GITHUB_OWNER}}/SimpleFaas/pulls/1/reviews
+Accept: application/vnd.github+json
+Authorization: Bearer {{GITHUB_PERSONAL_ACCESS_TOKEN}}
+X-GitHub-Api-Version: {{GITHUB_API_VERSION}}
+
+### List issue (PR) comments
+GET {{GITHUB_SERVICE_URL}}/repos/{{GITHUB_OWNER}}/SimpleFaas/issues/2/comments
+Accept: application/vnd.github+json
+Authorization: Bearer {{GITHUB_PERSONAL_ACCESS_TOKEN}}
+X-GitHub-Api-Version: {{GITHUB_API_VERSION}}
+
+### Create an issue (PR) comment
+POST {{GITHUB_SERVICE_URL}}/repos/{{GITHUB_OWNER}}/SimpleFaas/issues/2/comments
+Accept: application/vnd.github+json
+Authorization: Bearer {{GITHUB_PERSONAL_ACCESS_TOKEN}}
+X-GitHub-Api-Version: {{GITHUB_API_VERSION}}
+
+{
+  "body": "Hello GitHub commenting world!"
+}

@@ -42,30 +42,49 @@ Create free accounts (no credit card required) for the following services:
 
 #### sample `.env` file
 
+Template contents (placeholders shown):
+
 ```text
-LANGSMITH_PROJECT=agentic-systems
+# LangSmith (tracing/monitoring)
+LANGSMITH_PROJECT=your-project-name
 LANGSMITH_TRACING=true
-LANGSMITH_API_KEY=...
-QDRANT_CLUSTER_ENDPOINT=...
-QDRANT_API_KEY=...
-AZURE_INFERENCE_ENDPOINT=https://agentic-systems-resource.services.ai.azure.com/models
-AZURE_INFERENCE_CREDENTIAL=...
+LANGSMITH_API_KEY=lsv2_xxx_your_langsmith_api_key
+
+# Qdrant (vector database)
+QDRANT_CLUSTER_ENDPOINT=https://your-cluster-id.your-region-0.gcp.cloud.qdrant.io
+QDRANT_API_KEY=your-qdrant-api-key
+
+# Azure AI Inference
+AZURE_INFERENCE_ENDPOINT=https://your-azure-resource.services.ai.azure.com/models
+AZURE_INFERENCE_CREDENTIAL=your-azure-inference-credential
+
+# GitHub (for the custom MCP GitHub server)
+GITHUB_SERVICE_URL=https://api.github.com
+GITHUB_OWNER=your-github-username-or-org
+GITHUB_PERSONAL_ACCESS_TOKEN=github_pat_xxx_your_token
+GITHUB_API_VERSION=2022-11-28
 ```
 
 #### variables overview
 
-| Variable                     | Description                                                      |
-| ---------------------------- | ---------------------------------------------------------------- |
-| `LANGSMITH_PROJECT`          | Project name for LangSmith tracing and monitoring                |
-| `LANGSMITH_TRACING`          | Enable/disable LangSmith tracing for debugging and observability |
-| `LANGSMITH_API_KEY`          | API key for authenticating with LangSmith services               |
-| `QDRANT_CLUSTER_ENDPOINT`    | URL endpoint for the Qdrant vector database cluster $^1$         |
-| `QDRANT_API_KEY`             | API key for authenticating with the Qdrant cluster               |
-| `AZURE_INFERENCE_ENDPOINT`   | Azure AI inference service endpoint URL                          |
-| `AZURE_INFERENCE_CREDENTIAL` | Authentication credential for Azure AI $^2$                      |
+| Variable                       | Description                                                      |
+|--------------------------------|------------------------------------------------------------------|
+| `LANGSMITH_PROJECT`            | Project name for LangSmith tracing and monitoring                |
+| `LANGSMITH_TRACING`            | Enable/disable LangSmith tracing for debugging and observability |
+| `LANGSMITH_API_KEY`            | API key for authenticating with LangSmith services               |
+| `QDRANT_CLUSTER_ENDPOINT`      | URL endpoint for the Qdrant vector database cluster $^1$         |
+| `QDRANT_API_KEY`               | API key for authenticating with the Qdrant cluster               |
+| `AZURE_INFERENCE_ENDPOINT`     | Azure AI inference service endpoint URL                          |
+| `AZURE_INFERENCE_CREDENTIAL`   | Authentication credential for Azure AI $^2$                      |
+| `GITHUB_SERVICE_URL`           | Base URL for the GitHub REST API                                 |
+| `GITHUB_OWNER`                 | GitHub user/org whose repos are targeted                         |
+| `GITHUB_PERSONAL_ACCESS_TOKEN` | GitHub PAT used for authentication $^3$                          |
+| `GITHUB_API_VERSION`           | GitHub API version header value                                  |
 
-> $^1$ example: `https://871c0680-f6d1-41d9-be88-83c7cd7dcdad.europe-west3-0.gcp.cloud.qdrant.io`<br>
-> $^2$ The `AZURE_INFERENCE_CREDENTIAL` is sent as a One-Time Password (OTP) via email;
+> $^1$ Example: `https://871c0680-f6d1-41d9-be88-83c7cd7dcdad.europe-west3-0.gcp.cloud.qdrant.io`<br>
+> $^2$ The `AZURE_INFERENCE_CREDENTIAL` is sent as a One-Time Password (OTP) via email<br>
+> $^3$ Ensure the PAT is scoped to **Selected repositories** and has read+write access for the permission:
+> `Contents`, `Issues`, `Metadata` (required) and `Pull requests`.
 
 ###
 

@@ -1,4 +1,4 @@
 {
-  "recommendations": ["ms-python.python"],
+  "recommendations": ["ms-python.python", "anweber.vscode-httpyac"],
   "unwantedRecommendations": []
 }
