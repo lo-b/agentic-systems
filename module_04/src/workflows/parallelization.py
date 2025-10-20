@@ -11,7 +11,7 @@ from typing import Any, Dict, TypedDict
 # from langchain_azure_ai.chat_models import AzureAIChatCompletionsModel
 from langchain_ollama import ChatOllama
 from langgraph.graph import START, StateGraph
-from langsmith import Client
+from langchain import hub
 
 # INFO: SaaS LLMs using Azure AI Foundry
 # _model = AzureAIChatCompletionsModel(
@@ -20,7 +20,6 @@ from langsmith import Client
 #     credential=os.environ["AZURE_INFERENCE_CREDENTIAL"],
 # )
 _model = ChatOllama(model="qwen3:0.6b", reasoning=True)
-_client = Client()
 
 
 # INFO: define separate input, output and overall states; nicer UX.
@@ -45,7 +44,7 @@ async def process_vacancy(state: InputState) -> Dict[str, Any]:
 
     Can use runtime context to alter behavior.
     """
-    prompt = await asyncio.to_thread(_client.pull_prompt, "summarize-vacancy-prompt")
+    prompt = await asyncio.to_thread(hub.pull, "lo-b/summarize-vacancy-prompt")
     chain = prompt | _model
 
     try:
@@ -58,7 +57,7 @@ async def process_vacancy(state: InputState) -> Dict[str, Any]:
 
 
 async def process_cv(state: InputState) -> Dict[str, Any]:
-    prompt = await asyncio.to_thread(_client.pull_prompt, "summarize-cv")
+    prompt = await asyncio.to_thread(hub.pull, "lo-b/summarize-cv")
     chain = prompt | _model
 
     try:
@@ -76,7 +75,7 @@ def aggregator(state: OverallState):
     combined = f"JOB SUMMARY:\n{state['job_summary']}\n\n"
     combined += f"CV SUMMARY:\n{state['cv_summary']}\n\n"
 
-    prompt = _client.pull_prompt("cv-outline-from-aggregation")
+    prompt = hub.pull("lo-b/cv-outline-from-aggregation")
     chain = prompt | _model
     return {
         "response": chain.invoke(

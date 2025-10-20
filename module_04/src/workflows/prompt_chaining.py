@@ -8,11 +8,11 @@ import os
 from typing import Any, Dict, TypedDict
 
 from langchain_azure_ai.chat_models import AzureAIChatCompletionsModel
+from langchain import hub
 
 # from langchain_ollama import ChatOllama
 from langgraph.graph import StateGraph
 from langgraph.runtime import Runtime
-from langsmith import Client
 
 # INFO: SaaS LLMs using Azure AI Foundry
 _model = AzureAIChatCompletionsModel(
@@ -21,7 +21,6 @@ _model = AzureAIChatCompletionsModel(
     credential=os.environ["AZURE_INFERENCE_CREDENTIAL"],
 )
 # _model = ChatOllama(model="qwen3:0.6b", reasoning=True)
-_client = Client()
 
 
 class Context(TypedDict):
@@ -55,7 +54,7 @@ async def summarize(state: InputState, runtime: Runtime[Context]) -> Dict[str, A
 
     Can use runtime context to alter behavior.
     """
-    prompt = await asyncio.to_thread(_client.pull_prompt, "summarize-vacancy-prompt")
+    prompt = await asyncio.to_thread(hub.pull, "lo-b/summarize-vacancy-prompt")
     chain = prompt | _model
 
     try:
@@ -68,7 +67,7 @@ async def summarize(state: InputState, runtime: Runtime[Context]) -> Dict[str, A
 
 
 async def create_draft(state: OverallState) -> Dict[str, Any]:
-    prompt = await asyncio.to_thread(_client.pull_prompt, "create-cv-draft")
+    prompt = await asyncio.to_thread(hub.pull, "lo-b/create-cv-draft")
     chain = prompt | _model
 
     try:
@@ -81,7 +80,7 @@ async def create_draft(state: OverallState) -> Dict[str, Any]:
 
 
 async def create_outline(state: OverallState) -> Dict[str, Any]:
-    prompt = await asyncio.to_thread(_client.pull_prompt, "create-cv-outline")
+    prompt = await asyncio.to_thread(hub.pull, "lo-b/create-cv-outline")
     chain = prompt | _model
 
     try:
