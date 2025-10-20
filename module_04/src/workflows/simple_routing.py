@@ -4,10 +4,8 @@
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_ollama import ChatOllama
 from langgraph.graph import END, START, StateGraph
-from langsmith.client import Client
+from langchain import hub
 from typing_extensions import Annotated, Literal, TypedDict, cast
-
-_langsmith_client = Client()
 
 _llm = ChatOllama(model="qwen3:0.6b", reasoning=True)
 # _llm = AzureAIChatCompletionsModel(
@@ -34,21 +32,21 @@ class State(TypedDict):
 
 
 def low_code(state: State):
-    prompt = _langsmith_client.pull_prompt("low_code_cv_outline")
+    prompt = hub.pull("lo-b/low_code_cv_outline")
     chain = prompt | _llm
     result = chain.invoke({"job_description": state["input"]})
     return {"output": result.content}
 
 
 def data_engineering(state: State):
-    prompt = _langsmith_client.pull_prompt("data_engineering_cv_outline")
+    prompt = hub.pull("lo-b/data_engineering_cv_outline")
     chain = prompt | _llm
     result = chain.invoke({"job_description": state["input"]})
     return {"output": result.content}
 
 
 def integration_development(state: State):
-    prompt = _langsmith_client.pull_prompt("integration_developer_cv_outline")
+    prompt = hub.pull("lo-b/integration_developer_cv_outline")
     chain = prompt | _llm
     result = chain.invoke({"job_description": state["input"]})
     return {"output": result.content}
