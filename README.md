@@ -55,8 +55,8 @@ QDRANT_CLUSTER_ENDPOINT=https://your-cluster-id.your-region-0.gcp.cloud.qdrant.i
 QDRANT_API_KEY=your-qdrant-api-key
 
 # Azure AI Inference
-AZURE_INFERENCE_ENDPOINT=https://your-azure-resource.services.ai.azure.com/models
-AZURE_INFERENCE_CREDENTIAL=your-azure-inference-credential
+AZURE_INFERENCE_ENDPOINT=https://agentic-systems-resource.services.ai.azure.com/models
+AZURE_INFERENCE_CREDENTIAL=azure-ai-foundry-api-key
 
 # GitHub (for the custom MCP GitHub server)
 GITHUB_SERVICE_URL=https://api.github.com
