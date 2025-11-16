@@ -1,5 +1,7 @@
 import operator
+import os
 
+from dotenv import load_dotenv
 from langchain_azure_ai.chat_models import AzureAIChatCompletionsModel
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_ollama import ChatOllama
@@ -7,8 +9,12 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.types import Send
 from typing_extensions import Annotated, TypedDict
 
+assert load_dotenv(), ".env file missing or empty"
+
 # llm = ChatOllama(model="granite3-moe:3b")
-llm = AzureAIChatCompletionsModel(model="Ministral-3B")
+llm = AzureAIChatCompletionsModel(
+    model="Ministral-3B",
+)
 
 
 class Improvement(TypedDict):

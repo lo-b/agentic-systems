@@ -1,18 +1,16 @@
-# import os
-
 # from langchain_azure_ai.chat_models import AzureAIChatCompletionsModel
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_ollama import ChatOllama
 from langgraph.graph import END, START, StateGraph
-from langchain import hub
+from langsmith import Client
 from typing_extensions import Annotated, Literal, TypedDict, cast
 
 _llm = ChatOllama(model="qwen3:0.6b", reasoning=True)
 # _llm = AzureAIChatCompletionsModel(
 #     model="Ministral-3B",
-#     endpoint=os.environ["AZURE_INFERENCE_ENDPOINT"],
-#     credential=os.environ["AZURE_INFERENCE_CREDENTIAL"],
 # )
+
+_client = Client()
 
 
 class Route(TypedDict):
@@ -32,21 +30,21 @@ class State(TypedDict):
 
 
 def low_code(state: State):
-    prompt = hub.pull("lo-b/low_code_cv_outline")
+    prompt = _client.pull_prompt("lo-b/low_code_cv_outline")
     chain = prompt | _llm
     result = chain.invoke({"job_description": state["input"]})
     return {"output": result.content}
 
 
 def data_engineering(state: State):
-    prompt = hub.pull("lo-b/data_engineering_cv_outline")
+    prompt = _client.pull_prompt("lo-b/data_engineering_cv_outline")
     chain = prompt | _llm
     result = chain.invoke({"job_description": state["input"]})
     return {"output": result.content}
 
 
 def integration_development(state: State):
-    prompt = hub.pull("lo-b/integration_developer_cv_outline")
+    prompt = _client.pull_prompt("lo-b/integration_developer_cv_outline")
     chain = prompt | _llm
     result = chain.invoke({"job_description": state["input"]})
     return {"output": result.content}

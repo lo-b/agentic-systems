@@ -42,11 +42,11 @@ Create free accounts (no credit card required) for the following services:
 
 #### sample `.env` file
 
-Template contents (placeholders shown):
+Example file content (placeholders shown):
 
 ```text
 # LangSmith (tracing/monitoring)
-LANGSMITH_PROJECT=your-project-name
+LANGSMITH_PROJECT=agentic-systems
 LANGSMITH_TRACING=true
 LANGSMITH_API_KEY=lsv2_xxx_your_langsmith_api_key
 
@@ -68,7 +68,7 @@ GITHUB_API_VERSION=2022-11-28
 #### variables overview
 
 | Variable                       | Description                                                      |
-|--------------------------------|------------------------------------------------------------------|
+| ------------------------------ | ---------------------------------------------------------------- |
 | `LANGSMITH_PROJECT`            | Project name for LangSmith tracing and monitoring                |
 | `LANGSMITH_TRACING`            | Enable/disable LangSmith tracing for debugging and observability |
 | `LANGSMITH_API_KEY`            | API key for authenticating with LangSmith services               |

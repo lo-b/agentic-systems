@@ -42,12 +42,21 @@ Accept: application/vnd.github+json
 Authorization: Bearer {{GITHUB_PERSONAL_ACCESS_TOKEN}}
 X-GitHub-Api-Version: {{GITHUB_API_VERSION}}
 
-### Create an issue (PR) comment
-POST {{GITHUB_SERVICE_URL}}/repos/{{GITHUB_OWNER}}/SimpleFaas/issues/2/comments
+### List app installations
+// List all installations of the authenticated GitHub App
+GET {{GITHUB_SERVICE_URL}}/integration/installations
 Accept: application/vnd.github+json
-Authorization: Bearer {{GITHUB_PERSONAL_ACCESS_TOKEN}}
+Authorization: Bearer {{GITHUB_APP_JWT}}
 X-GitHub-Api-Version: {{GITHUB_API_VERSION}}
 
-{
-  "body": "Hello GitHub commenting world!"
-}
+### Create an app access token
+POST {{GITHUB_SERVICE_URL}}/app/installations/{{GITHUB_APP_INSTALL_ID}}/access_tokens
+Accept: application/vnd.github.v3+json
+Authorization: Bearer {{GITHUB_APP_JWT}}
+X-GitHub-Api-Version: {{GITHUB_API_VERSION}}
+
+### List PR changes using app creds
+GET {{GITHUB_SERVICE_URL}}/repos/{{GITHUB_OWNER}}/simple-faas/pulls/6/files
+Accept: application/vnd.github+json
+Authorization: Bearer {{GITHUB_APP_ACCESS_TOKEN}}
+X-GitHub-Api-Version: {{GITHUB_API_VERSION}}

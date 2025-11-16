@@ -1,4 +1,4 @@
 {
   "recommendations": ["ms-python.python", "anweber.vscode-httpyac"],
-  "unwantedRecommendations": []
+  "unwantedRecommendations": ["ms-vscode-remote.remote-containers", "ms-azuretools.vscode-containers"]
 }

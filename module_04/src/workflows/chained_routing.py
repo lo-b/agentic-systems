@@ -1,19 +1,14 @@
-import asyncio
-
-# import os
 # from langchain_azure_ai.chat_models import AzureAIChatCompletionsModel
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_ollama import ChatOllama
 from langgraph.graph import END, START, StateGraph
-from langchain import hub
+from langsmith import Client
 from typing_extensions import Annotated, Any, Literal, TypedDict, cast
 
-
+_client = Client()
 _llm = ChatOllama(model="qwen3:0.6b", reasoning=True)
 # _llm = AzureAIChatCompletionsModel(
 #     model="Ministral-3B",
-#     endpoint=os.environ["AZURE_INFERENCE_ENDPOINT"],
-#     credential=os.environ["AZURE_INFERENCE_CREDENTIAL"],
 # )
 
 
@@ -52,9 +47,7 @@ async def summarize(state: InputState) -> dict[str, Any]:
 
     Can use runtime context to alter behavior.
     """
-    prompt = await asyncio.to_thread(
-        hub.pull, "lo-b/summarize-vacancy-prompt"
-    )
+    prompt = _client.pull_prompt("lo-b/summarize-vacancy-prompt")
     chain = prompt | _llm
 
     try:
@@ -67,7 +60,7 @@ async def summarize(state: InputState) -> dict[str, Any]:
 
 
 async def create_draft(state: OverallState) -> dict[str, Any]:
-    prompt = await asyncio.to_thread(hub.pull, "lo-b/create-cv-draft")
+    prompt = _client.pull_prompt("lo-b/create-cv-draft")
     chain = prompt | _llm
 
     try:
@@ -80,7 +73,7 @@ async def create_draft(state: OverallState) -> dict[str, Any]:
 
 
 async def create_outline(state: OverallState) -> dict[str, Any]:
-    prompt = await asyncio.to_thread(hub.pull, "lo-b/create-cv-outline")
+    prompt = _client.pull_prompt("lo-b/create-cv-outline")
     chain = prompt | _llm
 
     try:
@@ -93,21 +86,21 @@ async def create_outline(state: OverallState) -> dict[str, Any]:
 
 
 def low_code(state: OverallState):
-    prompt = hub.pull("lo-b/low_code_cv_outline")
+    prompt = _client.pull_prompt("lo-b/low_code_cv_outline")
     chain = prompt | _llm
     result = chain.invoke({"job_description": state["draft"]})
     return {"response": result.content}
 
 
 def data_engineering(state: OverallState):
-    prompt = hub.pull("lo-b/data_engineering_cv_outline")
+    prompt = _client.pull_prompt("lo-b/data_engineering_cv_outline")
     chain = prompt | _llm
     result = chain.invoke({"job_description": state["draft"]})
     return {"response": result.content}
 
 
 def integration_development(state: OverallState):
-    prompt = hub.pull("lo-b/integration_developer_cv_outline")
+    prompt = _client.pull_prompt("lo-b/integration_developer_cv_outline")
     chain = prompt | _llm
     result = chain.invoke({"job_description": state["draft"]})
     return {"response": result.content}

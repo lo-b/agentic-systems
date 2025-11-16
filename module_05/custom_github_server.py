@@ -1,8 +1,8 @@
-import os
-from dataclasses import dataclass
 from http import HTTPStatus
 from typing import TypedDict
 
+from authn import create_gh_app_access_token, create_gh_app_token
+from config import GitHubAppConfig, GitHubConfig
 from dotenv import load_dotenv
 from fastmcp import FastMCP
 from pydantic import BaseModel, Field
@@ -12,24 +12,25 @@ assert load_dotenv(), "empty or no .env file found"
 
 mcp = FastMCP("CustomGitHub")
 
-
-@dataclass
-class GitHubConfig:
-    """Configuration object for the GitHub REST API."""
-
-    url: str = os.getenv("GITHUB_SERVICE_URL", "")
-    owner: str = os.getenv("GITHUB_OWNER", "")
-    secret_token: str = os.getenv("GITHUB_PERSONAL_ACCESS_TOKEN", "")
-    api_version: str = os.getenv("GITHUB_API_VERSION", "")
-
-
 config = GitHubConfig()
+app_config = GitHubAppConfig()
 
-headers = {
-    "Accept": "application/vnd.github+json",
-    "Authorization": f"Bearer {config.secret_token}",
-    "X-GitHub-Api-Version": "2022-11-28",
-}
+
+def build_headers() -> dict:
+    """Build fresh GitHub REST headers using a short‑lived installation access token.
+
+    Tokens expire quickly; always generate on demand to avoid 401s due to expiry.
+    """
+    jwt_token = create_gh_app_token(app_config, expire_after=600)
+    access_token = create_gh_app_access_token(config, jwt_token)
+    return {
+        "Accept": "application/vnd.github.v3+json",
+        # Use installation access token with the 'token' scheme for REST v3 endpoints
+        "Authorization": f"Bearer {access_token}",
+        "X-GitHub-Api-Version": "2022-11-28",
+        # GitHub requires a valid User-Agent header
+        "User-Agent": "CustomGitHub-MCP",
+    }
 
 
 class RepoResponse(TypedDict):
@@ -70,7 +71,7 @@ async def get_repo(repo_name: str) -> RepoResponse:
 
     res = get(
         f"{config.url}/repos/{config.owner}/{repo_name}",
-        headers=headers,
+        headers=build_headers(),
     )
 
     return {"description": res.json()["description"]}
@@ -78,7 +79,7 @@ async def get_repo(repo_name: str) -> RepoResponse:
 
 @mcp.tool()
 async def update_pr_description(
-        repo_name: str, description: str, pr_id: int
+    repo_name: str, description: str, pr_id: int
 ) -> PRResponse:
     """Update GitHub Pull Request body (description).
 
@@ -95,7 +96,7 @@ async def update_pr_description(
     res = patch(
         f"{config.url}/repos/{config.owner}/{repo_name}/pulls/{pr_id}",
         json=req,
-        headers=headers,
+        headers=build_headers(),
     )
 
     return {"http_code": HTTPStatus(res.status_code)}
@@ -110,16 +111,34 @@ async def pull_request_get_files(repo_name: str, pr_id: int) -> PrChanges:
         pr_id: ID of the pull request to update
 
     """
+    # Retrieve file changes for the PR. Build fresh headers to avoid expired tokens.
     res = get(
         f"{config.url}/repos/{config.owner}/{repo_name}/pulls/{pr_id}/files",
-        headers=headers,
+        headers=build_headers(),
     )
 
-    return PrChanges(changes=res.json())
+    # Handle non-success responses explicitly to avoid Pydantic validation errors
+    if not res.ok:
+        try:
+            detail = res.json()
+        except Exception:
+            detail = res.text
+        raise RuntimeError(f"GitHub API error {res.status_code}: {detail}")
+
+    data = res.json()
+    if not isinstance(data, list):
+        # GitHub should return a list here; anything else is unexpected
+        raise RuntimeError(f"Unexpected response type: {type(data).__name__}: {data}")
+
+    # Validate each entry against DiffEntry for clearer errors
+    entries = [DiffEntry(**item) for item in data]
+    return PrChanges(changes=entries)
 
 
 @mcp.tool()
-async def create_pr_comment(repo_name: str, pr_id: int, comment: str) -> CommentResponse:
+async def create_pr_comment(
+    repo_name: str, pr_id: int, comment: str
+) -> CommentResponse:
     """Create a GitHub Pull Request (PR) comment.
 
     Args:
@@ -132,18 +151,21 @@ async def create_pr_comment(repo_name: str, pr_id: int, comment: str) -> Comment
 
     """
 
-    req = {"body": comment}
+    # INFO: Add text to filter on webhook; prevents looping issue creation.
+    req = {"body": "<!-- MCP created -->\n\n" + comment}
     res = post(
         f"{config.url}/repos/{config.owner}/{repo_name}/issues/{pr_id}/comments",
         json=req,
-        headers=headers,
+        headers=build_headers(),
     )
 
     return {"comment_id": res.json()["id"]}
 
 
 @mcp.tool()
-async def update_pr_comment(repo_name: str, comment_id: int, comment: str) -> CommentResponse:
+async def update_pr_comment(
+    repo_name: str, comment_id: int, comment: str
+) -> CommentResponse:
     """Update GitHub Pull Request (PR) comment.
 
     Args:
@@ -158,7 +180,7 @@ async def update_pr_comment(repo_name: str, comment_id: int, comment: str) -> Co
     res = patch(
         f"{config.url}/repos/{config.owner}/{repo_name}/issues/comments/{comment_id}",
         json=req,
-        headers=headers,
+        headers=build_headers(),
     )
 
     return {"comment_id": res.json()["id"]}
