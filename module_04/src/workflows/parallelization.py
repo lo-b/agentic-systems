@@ -5,18 +5,13 @@ Returns a predefined response. Replace logic and configuration as needed.
 
 from typing import Any, Dict, TypedDict
 
-# from langchain_azure_ai.chat_models import AzureAIChatCompletionsModel
+from langchain_core.messages import AIMessage
 from langchain_ollama import ChatOllama
 from langgraph.graph import START, StateGraph
-from langsmith import Client
+from langsmith import AsyncClient
 
-_client = Client()
-
-# INFO: SaaS LLMs using Azure AI Foundry
-# _model = AzureAIChatCompletionsModel(
-#     model="Ministral-3B",
-# )
-_model = ChatOllama(model="qwen3:0.6b", reasoning=True)
+client = AsyncClient()
+model = ChatOllama(model="qwen3:0.6b", reasoning=True)
 
 
 # INFO: define separate input, output and overall states; nicer UX.
@@ -41,41 +36,43 @@ async def process_vacancy(state: InputState) -> Dict[str, Any]:
 
     Can use runtime context to alter behavior.
     """
-    prompt = _client.pull_prompt("lo-b/summarize-vacancy-prompt")
-    chain = prompt | _model
+    prompt = await client.pull_prompt("lo-b/summarize-vacancy-prompt")
+    chain = prompt | model
 
     try:
-        summary = await chain.ainvoke({"vacancy_description": state["vacancy"]})
+        summary: AIMessage = await chain.ainvoke(
+            {"vacancy_description": state["vacancy"]}
+        )
     except Exception as e:
         print(f"Error during summarization: {e}")
-        summary = "Failed to generate summary"
+        summary = AIMessage("Failed to generate summary")
 
-    return {"vacancy": state["vacancy"], "job_summary": summary}
+    return {"vacancy": state["vacancy"], "job_summary": summary.content}
 
 
 async def process_cv(state: InputState) -> Dict[str, Any]:
-    prompt = _client.pull_prompt("lo-b/summarize-cv")
-    chain = prompt | _model
+    prompt = await client.pull_prompt("lo-b/summarize-cv")
+    chain = prompt | model
 
     try:
-        summary = await chain.ainvoke({"cv": state["cv"]})
+        summary: AIMessage = await chain.ainvoke({"cv": state["cv"]})
     except Exception as e:
         print(f"Error during summarization: {e}")
-        summary = "Failed to generate summary"
+        summary = AIMessage("Failed to generate summary")
 
-    return {"cv": state["cv"], "cv_summary": summary}
+    return {"cv": state["cv"], "cv_summary": summary.content}
 
 
-def aggregator(state: OverallState):
+async def aggregator(state: OverallState):
     """Combine the summaries into a single output"""
 
     combined = f"JOB SUMMARY:\n{state['job_summary']}\n\n"
     combined += f"CV SUMMARY:\n{state['cv_summary']}\n\n"
 
-    prompt = _client.pull_prompt("lo-b/cv-outline-from-aggregation")
-    chain = prompt | _model
+    prompt = await client.pull_prompt("lo-b/cv-outline-from-aggregation")
+    chain = prompt | model
     return {
-        "response": chain.invoke(
+        "response": await chain.ainvoke(
             {
                 "job_summary": state["job_summary"],
                 "cv_summary": state["cv_summary"],
@@ -97,5 +94,5 @@ parallelization = (
     .add_edge(START, "process_vacancy")
     .add_edge("process_cv", "aggregator")
     .add_edge("process_vacancy", "aggregator")
-    .compile(name="Prompt chaining workflow")
+    .compile(name="Parallelization workflow")
 )
