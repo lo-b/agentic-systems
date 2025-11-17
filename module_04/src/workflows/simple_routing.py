@@ -1,16 +1,12 @@
-# from langchain_azure_ai.chat_models import AzureAIChatCompletionsModel
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_ollama import ChatOllama
 from langgraph.graph import END, START, StateGraph
-from langsmith import Client
+from langsmith import AsyncClient
 from typing_extensions import Annotated, Literal, TypedDict, cast
 
-_llm = ChatOllama(model="qwen3:0.6b", reasoning=True)
-# _llm = AzureAIChatCompletionsModel(
-#     model="Ministral-3B",
-# )
+llm = ChatOllama(model="qwen3:0.6b", reasoning=True)
 
-_client = Client()
+client = AsyncClient()
 
 
 class Route(TypedDict):
@@ -20,7 +16,7 @@ class Route(TypedDict):
     ]
 
 
-_router = _llm.with_structured_output(Route)
+_router = llm.with_structured_output(Route)
 
 
 class State(TypedDict):
@@ -29,31 +25,31 @@ class State(TypedDict):
     output: str
 
 
-def low_code(state: State):
-    prompt = _client.pull_prompt("lo-b/low_code_cv_outline")
-    chain = prompt | _llm
-    result = chain.invoke({"job_description": state["input"]})
+async def low_code(state: State):
+    prompt = await client.pull_prompt("lo-b/low_code_cv_outline")
+    chain = prompt | llm
+    result = await chain.ainvoke({"job_description": state["input"]})
     return {"output": result.content}
 
 
-def data_engineering(state: State):
-    prompt = _client.pull_prompt("lo-b/data_engineering_cv_outline")
-    chain = prompt | _llm
-    result = chain.invoke({"job_description": state["input"]})
+async def data_engineering(state: State):
+    prompt = await client.pull_prompt("lo-b/data_engineering_cv_outline")
+    chain = prompt | llm
+    result = await chain.ainvoke({"job_description": state["input"]})
     return {"output": result.content}
 
 
-def integration_development(state: State):
-    prompt = _client.pull_prompt("lo-b/integration_developer_cv_outline")
-    chain = prompt | _llm
-    result = chain.invoke({"job_description": state["input"]})
+async def integration_development(state: State):
+    prompt = await client.pull_prompt("lo-b/integration_developer_cv_outline")
+    chain = prompt | llm
+    result = await chain.ainvoke({"job_description": state["input"]})
     return {"output": result.content}
 
 
-def router(state: State):
+async def router(state: State):
     """Route the input to the appropriate node"""
 
-    decision = _router.invoke(
+    decision = await _router.ainvoke(
         [
             SystemMessage(
                 content=(
