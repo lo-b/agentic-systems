@@ -1,15 +1,11 @@
-# from langchain_azure_ai.chat_models import AzureAIChatCompletionsModel
-from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_ollama import ChatOllama
 from langgraph.graph import END, START, StateGraph
-from langsmith import Client
+from langsmith import AsyncClient
 from typing_extensions import Annotated, Any, Literal, TypedDict, cast
 
-_client = Client()
-_llm = ChatOllama(model="qwen3:0.6b", reasoning=True)
-# _llm = AzureAIChatCompletionsModel(
-#     model="Ministral-3B",
-# )
+client = AsyncClient()
+llm = ChatOllama(model="qwen3:0.6b", reasoning=True)
 
 
 class Route(TypedDict):
@@ -23,7 +19,7 @@ class Route(TypedDict):
     ]
 
 
-_router = _llm.with_structured_output(Route)
+_router = llm.with_structured_output(Route)
 
 
 class InputState(TypedDict):
@@ -47,69 +43,71 @@ async def summarize(state: InputState) -> dict[str, Any]:
 
     Can use runtime context to alter behavior.
     """
-    prompt = _client.pull_prompt("lo-b/summarize-vacancy-prompt")
-    chain = prompt | _llm
+    prompt = await client.pull_prompt("lo-b/summarize-vacancy-prompt")
+    chain = prompt | llm
 
     try:
-        summary = await chain.ainvoke({"vacancy_description": state["vacancy"]})
+        summary: AIMessage = await chain.ainvoke(
+            {"vacancy_description": state["vacancy"]}
+        )
     except Exception as e:
         print(f"Error during summarization: {e}")
-        summary = "Failed to generate summary"
+        summary = AIMessage("Failed to generate summary")
 
     return {"vacancy": state["vacancy"], "summary": summary.content}
 
 
 async def create_draft(state: OverallState) -> dict[str, Any]:
-    prompt = _client.pull_prompt("lo-b/create-cv-draft")
-    chain = prompt | _llm
+    prompt = await client.pull_prompt("lo-b/create-cv-draft")
+    chain = prompt | llm
 
     try:
-        draft = await chain.ainvoke({"job_summary": state["summary"]})
+        draft: AIMessage = await chain.ainvoke({"job_summary": state["summary"]})
     except Exception as e:
         print(f"Error during summarization: {e}")
-        draft = "Failed to generate summary"
+        draft = AIMessage("Failed to generate summary")
 
     return {"draft": draft.content}
 
 
 async def create_outline(state: OverallState) -> dict[str, Any]:
-    prompt = _client.pull_prompt("lo-b/create-cv-outline")
-    chain = prompt | _llm
+    prompt = await client.pull_prompt("lo-b/create-cv-outline")
+    chain = prompt | llm
 
     try:
-        cv_outline = await chain.ainvoke({"cv_draft": state["draft"]})
+        cv_outline: AIMessage = await chain.ainvoke({"cv_draft": state["draft"]})
     except Exception as e:
         print(f"Error during summarization: {e}")
-        cv_outline = "Failed to generate summary"
+        cv_outline = AIMessage("Failed to generate summary")
 
     return {"response": cv_outline.content}
 
 
-def low_code(state: OverallState):
-    prompt = _client.pull_prompt("lo-b/low_code_cv_outline")
-    chain = prompt | _llm
-    result = chain.invoke({"job_description": state["draft"]})
+async def low_code(state: OverallState):
+    prompt = await client.pull_prompt("lo-b/low_code_cv_outline")
+    chain = prompt | llm
+    result = await chain.ainvoke({"job_description": state["draft"]})
     return {"response": result.content}
 
 
-def data_engineering(state: OverallState):
-    prompt = _client.pull_prompt("lo-b/data_engineering_cv_outline")
-    chain = prompt | _llm
-    result = chain.invoke({"job_description": state["draft"]})
+async def data_engineering(state: OverallState):
+    prompt = await client.pull_prompt("lo-b/data_engineering_cv_outline")
+    chain = prompt | llm
+    result = await chain.ainvoke({"job_description": state["draft"]})
     return {"response": result.content}
 
 
-def integration_development(state: OverallState):
-    prompt = _client.pull_prompt("lo-b/integration_developer_cv_outline")
-    chain = prompt | _llm
-    result = chain.invoke({"job_description": state["draft"]})
+async def integration_development(state: OverallState):
+    prompt = await client.pull_prompt("lo-b/integration_developer_cv_outline")
+    chain = prompt | llm
+    result = await chain.ainvoke({"job_description": state["draft"]})
     return {"response": result.content}
 
 
-def router(state: OverallState):
+async def router(state: OverallState):
     """Route the input to the appropriate node"""
 
-    decision = _router.invoke(
+    decision = await _router.ainvoke(
         [
             SystemMessage(
                 content=(
@@ -163,5 +161,5 @@ chained_routing = (
     .add_edge("low_code", END)
     .add_edge("data_engineering", END)
     .add_edge("integration_development", END)
-    .compile(name="Chained routing")
+    .compile(name="Chained routing workflow")
 )

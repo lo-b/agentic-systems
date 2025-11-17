@@ -95,5 +95,5 @@ simple_routing = (
     .add_edge("low_code", END)
     .add_edge("data_engineering", END)
     .add_edge("integration_development", END)
-    .compile()
+    .compile(name="Routing workflow")
 )
