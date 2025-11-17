@@ -3,26 +3,20 @@
 Returns a predefined response. Replace logic and configuration as needed.
 """
 
-import os
 from typing import Any, Dict, TypedDict
 
 from dotenv import load_dotenv
-from langchain_azure_ai.chat_models import AzureAIChatCompletionsModel
-
-# from langchain_ollama import ChatOllama
+from langchain_core.messages import AIMessage
+from langchain_ollama import ChatOllama
 from langgraph.graph import StateGraph
-from langgraph.runtime import Runtime
-from langsmith import Client
+from langsmith import AsyncClient
 
 assert load_dotenv(), ".env file missing or empty"
 
-_client = Client()
+client = AsyncClient()
 
 # INFO: SaaS LLMs using Azure AI Foundry
-_model = AzureAIChatCompletionsModel(
-    model="Ministral-3B",
-)
-# _model = ChatOllama(model="qwen3:0.6b", reasoning=True)
+model = ChatOllama(model="qwen3:0.6b", reasoning=True)
 
 
 class Context(TypedDict):
@@ -51,48 +45,50 @@ class OverallState(TypedDict):
     response: str
 
 
-async def summarize(state: InputState, runtime: Runtime[Context]) -> Dict[str, Any]:
+async def summarize(state: InputState) -> Dict[str, Any]:
     """Process input and returns output.
 
     Can use runtime context to alter behavior.
     """
 
-    prompt = _client.pull_prompt("lo-b/summarize-vacancy-prompt")
-    chain = prompt | _model
+    prompt = await client.pull_prompt("lo-b/summarize-vacancy-prompt")
+    chain = prompt | model
 
     try:
-        summary = await chain.ainvoke({"vacancy_description": state["vacancy"]})
+        summary: AIMessage = await chain.ainvoke(
+            {"vacancy_description": state["vacancy"]}
+        )
     except Exception as e:
         print(f"Error during summarization: {e}")
-        summary = "Failed to generate summary"
+        summary = AIMessage("Failed to generate summary")
 
-    return {"vacancy": state["vacancy"], "summary": summary}
+    return {"vacancy": state["vacancy"], "summary": summary.content}
 
 
 async def create_draft(state: OverallState) -> Dict[str, Any]:
-    prompt = _client.pull_prompt("lo-b/create-cv-draft")
-    chain = prompt | _model
+    prompt = await client.pull_prompt("lo-b/create-cv-draft")
+    chain = prompt | model
 
     try:
-        draft = await chain.ainvoke({"job_summary": state["summary"]})
+        draft: AIMessage = await chain.ainvoke({"job_summary": state["summary"]})
     except Exception as e:
-        print(f"Error during summarization: {e}")
-        draft = "Failed to generate summary"
+        print(f"Error during draft generation: {e}")
+        draft = AIMessage("Failed to generate draft")
 
-    return {"draft": draft}
+    return {"draft": draft.content}
 
 
 async def create_outline(state: OverallState) -> Dict[str, Any]:
-    prompt = _client.pull_prompt("lo-b/create-cv-outline")
-    chain = prompt | _model
+    prompt = await client.pull_prompt("lo-b/create-cv-outline")
+    chain = prompt | model
 
     try:
-        draft = await chain.ainvoke({"cv_draft": state["draft"]})
+        outline: AIMessage = await chain.ainvoke({"cv_draft": state["draft"]})
     except Exception as e:
-        print(f"Error during summarization: {e}")
-        draft = "Failed to generate summary"
+        print(f"Error during outline generation: {e}")
+        outline = AIMessage("Failed to generate outline")
 
-    return {"response": draft}
+    return {"response": outline.content}
 
 
 prompt_chain = (
