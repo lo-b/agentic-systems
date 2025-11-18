@@ -1,5 +1,6 @@
 import operator
 import os
+from typing import cast
 
 from dotenv import load_dotenv
 from langchain_azure_ai.chat_models import AzureAIChatCompletionsModel
@@ -11,9 +12,12 @@ from typing_extensions import Annotated, TypedDict
 
 assert load_dotenv(), ".env file missing or empty"
 
+# WARN: might throw a 'ResponsibleAIPolicyViolation' where a 'jailbreak' is detected; rerun or use local LLM
 # llm = ChatOllama(model="granite3-moe:3b")
 llm = AzureAIChatCompletionsModel(
-    model="Ministral-3B",
+    model="grok-4-fast-reasoning",
+    credential=os.getenv("AZURE_AI_CREDENTIAL"),
+    endpoint=os.getenv("AZURE_AI_ENDPOINT"),
 )
 
 
@@ -47,11 +51,11 @@ class WorkerState(TypedDict):
     completed_sections: Annotated[list, operator.add]
 
 
-def orchestrator(state: State):
+async def orchestrator(state: State):
     """Orchestrator that generates CV improvements, based on a job description/vacancy."""
 
     # Generate queries
-    report_sections = planner.invoke(
+    improvements = await planner.ainvoke(
         [
             SystemMessage(
                 content="""You are an expert CV consultant and ATS optimization specialist. Analyze the provided CV 
@@ -86,7 +90,9 @@ def orchestrator(state: State):
         ]
     )
 
-    return {"sections": report_sections["sections"]}
+    improvements = cast(Improvements, improvements)
+
+    return {"sections": improvements["sections"]}
 
 
 def llm_call(state: WorkerState):
@@ -178,4 +184,6 @@ orchestrator_worker_builder = (
     .add_edge("synthesizer", END)
 )
 
-orchestrator_workers = orchestrator_worker_builder.compile()
+orchestrator_workers = orchestrator_worker_builder.compile(
+    name="Orchestrator-workers workflow"
+)
