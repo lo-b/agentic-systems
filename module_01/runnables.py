@@ -1,16 +1,16 @@
 from langchain_core.runnables import RunnableLambda
 
 
-def _add_one(a: int) -> int:
+def add_one(a: int) -> int:
     return a + 1
 
 
-def _adder(a: int, b: int) -> int:
+def adder(a: int, b: int) -> int:
     return a + b
 
 
-def _adder_wrapper(_input: dict[str, int]) -> int:
-    return _adder(_input["a"], _input["b"])
+def adder_wrapper(input: dict[str, int]) -> int:
+    return adder(input["a"], input["b"])
 
 
 class Greeter:
@@ -30,9 +30,9 @@ lambda_adder: RunnableLambda[dict[str, int], int] = RunnableLambda(
     lambda d: d["a"] + d["b"]
 )
 
-add_one: RunnableLambda[int, int] = RunnableLambda(_add_one)
-adder: RunnableLambda[dict[str, int], int] = RunnableLambda(
-    _adder_wrapper, name="adder"
+add_one_runnable: RunnableLambda[int, int] = RunnableLambda(add_one)
+adder_runnable: RunnableLambda[dict[str, int], int] = RunnableLambda(
+    adder_wrapper, name="adder"
 )
-_greeter: Greeter = Greeter(greeting="Hello")
-greeter: RunnableLambda[str, str] = RunnableLambda(_greeter)
+hello_greeter: Greeter = Greeter(greeting="Hello")
+greeter_runnable: RunnableLambda[str, str] = RunnableLambda(hello_greeter)

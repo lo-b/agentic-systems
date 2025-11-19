@@ -1,31 +1,33 @@
 import math
 
-from langchain.globals import set_debug
+from langchain_core.globals import set_debug
 from langchain_core.runnables import RunnableLambda, RunnableSequence
 
 
-def _add_ten(x: int) -> int:
+def add_ten(x: int) -> int:
     return x + 10
 
 
-def _double(x: int) -> int:
+def double(x: int) -> int:
     return x * 2
 
 
-def _process_number(x: int) -> int:
+def process_number(x: int) -> int:
     return x // int(math.pi * math.e)
 
 
-def _format_result(x: int) -> str:
+def format_result(x: int) -> str:
     return f"Final result: {x}"
 
 
-add_ten: RunnableLambda[int, int] = RunnableLambda(_add_ten)
-double: RunnableLambda[int, int] = RunnableLambda(_double)
-process: RunnableLambda[int, int] = RunnableLambda(_process_number)
-format_result: RunnableLambda[int, str] = RunnableLambda(_format_result)
+add_ten_runnable: RunnableLambda[int, int] = RunnableLambda(add_ten)
+double_runnable: RunnableLambda[int, int] = RunnableLambda(double)
+process_runnable: RunnableLambda[int, int] = RunnableLambda(process_number)
+format_runnable: RunnableLambda[int, str] = RunnableLambda(format_result)
 
-buggy_chain = RunnableSequence(add_ten, process, double, format_result)
+buggy_chain = RunnableSequence(
+    add_ten_runnable, process_runnable, double_runnable, format_runnable
+)
 
 # TODO: fix the chain containing a bug below
 print(buggy_chain(input=2))

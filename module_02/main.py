@@ -5,8 +5,8 @@ from document_retriever import index_book
 
 
 def main():
-    print("==== module_02 ====")
-    print("SIMPLE INDEX")
+    print("////////////////////////////// module_02 //////////////////////////////")
+    print("===== SIMPLE INDEX =====")
     retriever = index_book(
         path="./resources/the-little-go-book-karl-seguin.pdf",
         tmp_path="./tmp/retriever",
@@ -16,7 +16,7 @@ def main():
     answer = retriever.similarity_search("iterate array", k=1)
     pp(answer[0].model_dump())
 
-    print("CLOUD INDEX")
+    print("===== CLOUD INDEX =====")
     docs = load_pdf_as_docs(
         "./resources/the-little-go-book-karl-seguin.pdf",
         chunk_size_overlap=(250, 50),

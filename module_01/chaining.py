@@ -4,17 +4,17 @@ from langchain_core.runnables import (
     RunnablePassthrough,
     RunnableSequence,
 )
-from runnables import adder
+from runnables import adder_runnable
 
-_t: RunnableLambda[int, dict[str, int]] = RunnableLambda(
+t: RunnableLambda[int, dict[str, int]] = RunnableLambda(
     lambda x: {"a": x, "b": x}, name="transform"
 )
 
-adder_chain = RunnableSequence(adder, _t, adder)
+adder_chain = RunnableSequence(adder_runnable, t, adder_runnable)
 
-parallel_chain = RunnableParallel(a=adder, b=adder)
+parallel_chain = RunnableParallel(a=adder_runnable, b=adder_runnable)
 
-s = RunnableSequence(parallel_chain, adder)
+sequence = RunnableSequence(parallel_chain, adder_runnable)
 
 
 def _f(x):
