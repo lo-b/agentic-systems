@@ -55,31 +55,53 @@ QDRANT_CLUSTER_ENDPOINT=https://your-cluster-id.your-region-0.gcp.cloud.qdrant.i
 QDRANT_API_KEY=your-qdrant-api-key
 
 # Azure AI Inference
-AZURE_INFERENCE_ENDPOINT=https://agentic-systems-resource.services.ai.azure.com/models
-AZURE_INFERENCE_CREDENTIAL=azure-ai-foundry-api-key
+AZURE_AI_ENDPOINT=https://agentic-systems-resource.services.ai.azure.com/models
+AZURE_AI_CREDENTIAL=azure-ai-foundry-api-key
 
 # GitHub (for the custom MCP GitHub server)
 GITHUB_SERVICE_URL=https://api.github.com
 GITHUB_OWNER=your-github-username-or-org
 GITHUB_PERSONAL_ACCESS_TOKEN=github_pat_xxx_your_token
 GITHUB_API_VERSION=2022-11-28
+
+# Webhook secret
+GITHUB_WEBHOOK_SECRET=my-secret
+
+# GitHub App (bot) creds
+GITHUB_APP_CLIENT_ID=app-client-id
+GITHUB_APP_INSTALL_ID=12345678
+GITHUB_APP_PEM_PATH="/path/to/my.pem"
+GITHUB_APP_JWT=eyJ...
+GITHUB_APP_ACCESS_TOKEN=ghs_cj...
+
+# Webhook env settings
+VALIDATE_SIG=true
+WEBHOOK_PORT=8080
 ```
 
 #### variables overview
 
-| Variable                       | Description                                                      |
-| ------------------------------ | ---------------------------------------------------------------- |
-| `LANGSMITH_PROJECT`            | Project name for LangSmith tracing and monitoring                |
-| `LANGSMITH_TRACING`            | Enable/disable LangSmith tracing for debugging and observability |
-| `LANGSMITH_API_KEY`            | API key for authenticating with LangSmith services               |
-| `QDRANT_CLUSTER_ENDPOINT`      | URL endpoint for the Qdrant vector database cluster $^1$         |
-| `QDRANT_API_KEY`               | API key for authenticating with the Qdrant cluster               |
-| `AZURE_INFERENCE_ENDPOINT`     | Azure AI inference service endpoint URL                          |
-| `AZURE_INFERENCE_CREDENTIAL`   | Authentication credential for Azure AI $^2$                      |
-| `GITHUB_SERVICE_URL`           | Base URL for the GitHub REST API                                 |
-| `GITHUB_OWNER`                 | GitHub user/org whose repos are targeted                         |
-| `GITHUB_PERSONAL_ACCESS_TOKEN` | GitHub PAT used for authentication $^3$                          |
-| `GITHUB_API_VERSION`           | GitHub API version header value                                  |
+| Variable                       | Description                                                               |
+| ------------------------------ | ------------------------------------------------------------------------- |
+| `LANGSMITH_PROJECT`            | Project name for LangSmith tracing and monitoring                         |
+| `LANGSMITH_TRACING`            | Enable/disable LangSmith tracing for debugging and observability          |
+| `LANGSMITH_API_KEY`            | API key for authenticating with LangSmith services                        |
+| `QDRANT_CLUSTER_ENDPOINT`      | URL endpoint for the Qdrant vector database cluster $^1$                  |
+| `QDRANT_API_KEY`               | API key for authenticating with the Qdrant cluster                        |
+| `AZURE_AI_ENDPOINT`            | Azure AI inference service endpoint URL                                   |
+| `AZURE_AI_CREDENTIAL`          | Authentication credential for Azure AI $^2$                               |
+| `GITHUB_SERVICE_URL`           | Base URL for the GitHub REST API                                          |
+| `GITHUB_OWNER`                 | GitHub user/org whose repos are targeted                                  |
+| `GITHUB_PERSONAL_ACCESS_TOKEN` | GitHub PAT used for authentication $^3$                                   |
+| `GITHUB_API_VERSION`           | GitHub API version header value                                           |
+| `GITHUB_WEBHOOK_SECRET`        | Secret used to verify the signature of incoming GitHub webhook payloads   |
+| `GITHUB_APP_CLIENT_ID`         | Client ID of the GitHub App                                               |
+| `GITHUB_APP_INSTALL_ID`        | Installation ID of the GitHub App for the target organization/repository  |
+| `GITHUB_APP_PEM_PATH`          | Path to the private key (.pem file) of the GitHub App                     |
+| `GITHUB_APP_JWT`               | Short-lived JWT generated from the GitHub App private key                 |
+| `GITHUB_APP_ACCESS_TOKEN`      | Installation access token obtained using the JWT (refreshed periodically) |
+| `VALIDATE_SIG`                 | Whether to validate HMAC signatures on incoming webhooks (`true`/`false`) |
+| `WEBHOOK_PORT`                 | Port on which the webhook server listens (e.g., `8080`)                   |
 
 > $^1$ Example: `https://871c0680-f6d1-41d9-be88-83c7cd7dcdad.europe-west3-0.gcp.cloud.qdrant.io`<br>
 > $^2$ The `AZURE_INFERENCE_CREDENTIAL` is sent as a One-Time Password (OTP) via email<br>
