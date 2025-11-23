@@ -8,14 +8,15 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_ollama import ChatOllama
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Send
+from pydantic import BaseModel, Field
 from typing_extensions import Annotated, TypedDict
 
 assert load_dotenv(), ".env file missing or empty"
 
-# WARN: might throw a 'ResponsibleAIPolicyViolation' where a 'jailbreak' is detected; rerun or use local LLM
-# llm = ChatOllama(model="granite3-moe:3b")
+# WARN: might throw a 'ResponsibleAIPolicyViolation' where a 'jailbreak' is detected;
+# try rerun or only use local LLMs
 llm = AzureAIChatCompletionsModel(
-    model="grok-4-fast-reasoning",
+    model="Ministral-3B",
     credential=os.getenv("AZURE_AI_CREDENTIAL"),
     endpoint=os.getenv("AZURE_AI_ENDPOINT"),
 )
@@ -29,11 +30,16 @@ class Improvement(TypedDict):
     ]
 
 
-class Improvements(TypedDict):
-    sections: Annotated[list[Improvement], "CV improvements."]
+class Improvements(BaseModel):
+    sections: list[Improvement] = Field(description="CV improvements.")
 
 
-planner = llm.with_structured_output(Improvements)
+# planner = ChatOllama(model="granite3-moe:3b").with_structured_output(Improvements)
+planner = AzureAIChatCompletionsModel(
+    model="mistral-medium-2505",
+    credential=os.getenv("AZURE_AI_CREDENTIAL"),
+    endpoint=os.getenv("AZURE_AI_ENDPOINT"),
+).with_structured_output(Improvements, "json_schema")
 
 
 class State(TypedDict):
@@ -92,7 +98,7 @@ async def orchestrator(state: State):
 
     improvements = cast(Improvements, improvements)
 
-    return {"sections": improvements["sections"]}
+    return {"sections": improvements.sections}
 
 
 def llm_call(state: WorkerState):
