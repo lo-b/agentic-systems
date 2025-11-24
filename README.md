@@ -4,18 +4,15 @@ Agentic systems exploration using LangChain and LangGraph.
 
 ## Requirements
 
+- uv ☀️: a Python package and project manager.
+  - [macOS](https://docs.astral.sh/uv/getting-started/installation/#__tabbed_1_1)
+  - [Windows](https://docs.astral.sh/uv/getting-started/installation/#__tabbed_1_2)
 - docker 🐋: to run containerized workloads
   - [macOS](https://docs.docker.com/desktop/setup/install/mac-install/)
   - [Windows](https://docs.docker.com/desktop/setup/install/windows-install/)
 - ollama 🦙: run local LLM models with ease (using docker)
   - [macOS](https://ollama.com/download/mac)
   - [Windows](https://ollama.com/download/windows)
-- uv ☀️: a Python package and project manager.
-  - [macOS](https://docs.astral.sh/uv/getting-started/installation/#__tabbed_1_1)
-  - [Windows](https://docs.astral.sh/uv/getting-started/installation/#__tabbed_1_2)
-
-<!-- TODO: extend/replace venv info with IDE setup-->
-<!-- TODO: install python necessary? -->
 
 ## Environment setup
 
