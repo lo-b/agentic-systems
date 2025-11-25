@@ -24,7 +24,7 @@ class MessagesState(TypedDict):
 
 
 def determine_ingredients(state: dict):
-    ingredients = model.invoke(
+    ai_response = model.invoke(
         [
             SystemMessage(
                 content="You are a helpful assistant tasked with "
@@ -36,18 +36,16 @@ def determine_ingredients(state: dict):
     )
 
     return {
-        "messages": [ingredients],
+        "messages": [ai_response],
         "llm_calls": state.get('llm_calls', 0) + 1,
-        "ingredients": ingredients.content
+        "ingredients": ai_response.content
     }
 
 
 def make_recipe(state: dict):
     """Create a recipe based on the ingredients"""
 
-    # Don't pass the assistant's ingredients message to the model
-    # Instead, create a new user message with the ingredients
-    recipe = model.invoke(
+    ai_response = model.invoke(
         [
             SystemMessage(
                 content="You are a helpful assistant that creates simple recipes."
@@ -59,7 +57,7 @@ def make_recipe(state: dict):
     )
 
     return {
-        "messages": [recipe],
+        "messages": [ai_response],
         "llm_calls": state.get('llm_calls', 0) + 1
     }
 
