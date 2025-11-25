@@ -46,6 +46,8 @@ Example file content (placeholders shown):
 LANGSMITH_PROJECT=agentic-systems
 LANGSMITH_TRACING=true
 LANGSMITH_API_KEY=lsv2_xxx_your_langsmith_api_key
+# Uncomment env var below when using an EU west data region
+# LANGSMITH_ENDPOINT=https://eu.api.smith.langchain.com
 
 # Qdrant (vector database)
 QDRANT_CLUSTER_ENDPOINT=https://your-cluster-id.your-region-0.gcp.cloud.qdrant.io
