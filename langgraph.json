@@ -2,7 +2,7 @@
   "$schema": "https://langgra.ph/schema.json",
   "dependencies": ["."],
   "graphs": {
-    "basic_chatbot": "./module_04/src/workflows/basic_chatbot.py:basic_chatbot",
+    "example_graph": "./module_04/src/workflows/example_graph.py:agent",
     "mock_llm": "./module_05/mock_llm.py:graph"
   },
   "env": ".env",
